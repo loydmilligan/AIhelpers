@@ -1,6 +1,6 @@
 # Task ID: 1
 # Title: Setup Python CLI Project Structure
-# Status: to-do
+# Status: done
 # Dependencies: 
 # Priority: high
 # Description: Create the basic file and directory structure for the Python CLI application.

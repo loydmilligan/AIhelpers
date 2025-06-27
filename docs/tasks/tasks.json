@@ -7,7 +7,7 @@
         "description": "Create the basic file and directory structure for the Python CLI application.",
         "priority": "high",
         "dependencies": [],
-        "status": "to-do"
+        "status": "done"
       },
       {
         "id": 2,
@@ -15,7 +15,7 @@
         "description": "Develop the logic to read and parse prompt templates to find placeholders.",
         "priority": "high",
         "dependencies": [1],
-        "status": "to-do"
+        "status": "done"
       },
       {
         "id": 3,
@@ -23,7 +23,7 @@
         "description": "Create the interactive command-line interface to ask the user questions based on the parsed template variables.",
         "priority": "high",
         "dependencies": [2],
-        "status": "to-do"
+        "status": "done"
       },
       {
         "id": 4,
@@ -31,7 +31,7 @@
         "description": "Convert the user's answers into a JSON file.",
         "priority": "high",
         "dependencies": [3],
-        "status": "to-do"
+        "status": "done"
       },
       {
         "id": 5,

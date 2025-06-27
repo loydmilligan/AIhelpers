@@ -1,6 +1,6 @@
 # Task ID: 2
 # Title: Implement Template Parser
-# Status: to-do
+# Status: done
 # Dependencies: 1
 # Priority: high
 # Description: Develop the logic to read and parse prompt templates to find placeholders.
