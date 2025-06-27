@@ -1,0 +1,560 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup EJS Template Engine and Project Structure",
+        "description": "Configure Express.js with EJS templating engine and establish the foundational directory structure for server-side rendered views",
+        "details": "1. Install EJS dependency: npm install ejs@3.1.10\n2. Configure Express app to use EJS: app.set('view engine', 'ejs'); app.set('views', path.join(__dirname, 'views'));\n3. Create directory structure:\n   - views/\n     - layouts/\n       - main.ejs (base template with navigation)\n     - partials/\n       - header.ejs\n       - footer.ejs\n       - navigation.ejs\n     - pages/\n       - dashboard.ejs\n       - content-management.ejs\n       - digest-management.ejs\n       - configuration.ejs\n       - analytics.ejs\n   - public/\n     - css/\n     - js/\n     - images/\n4. Create base layout template with HTMX, Tailwind CSS CDN, and Chart.js CDN includes\n5. Implement navigation partial with active state handling",
+        "testStrategy": "1. Verify EJS renders correctly by creating test route\n2. Ensure all CDN resources load without errors\n3. Test navigation between pages maintains active states\n4. Validate responsive design breakpoints\n5. Check template inheritance works correctly",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install and configure EJS dependencies",
+            "description": "Install EJS package and configure Express.js to use EJS as the view engine with proper directory setup",
+            "dependencies": [],
+            "details": "Execute npm install ejs@3.1.10 to add EJS to the project. Configure Express app with app.set('view engine', 'ejs') and app.set('views', path.join(__dirname, 'views')). Ensure path module is imported. Verify installation by checking package.json dependencies.",
+            "status": "done",
+            "testStrategy": "Create a test route that renders a simple EJS template to verify the view engine is properly configured. Check that the views directory path is correctly resolved."
+          },
+          {
+            "id": 2,
+            "title": "Create views directory structure",
+            "description": "Establish the complete directory hierarchy for organizing EJS templates, layouts, partials, and pages",
+            "dependencies": [
+              1
+            ],
+            "details": "Create the following directory structure: views/ (root for all templates), views/layouts/ (for main layout templates), views/partials/ (for reusable components), views/pages/ (for individual page templates). Also create public/ directory with subdirectories: public/css/, public/js/, public/images/ for static assets. Use fs.mkdirSync or manual creation to ensure all directories exist.",
+            "status": "done",
+            "testStrategy": "Write a script to verify all required directories exist using fs.existsSync. Test that Express can locate templates in the configured views directory."
+          },
+          {
+            "id": 3,
+            "title": "Implement base layout template with CDN includes",
+            "description": "Create the main.ejs base layout template with HTMX, Tailwind CSS, and Chart.js CDN integrations",
+            "dependencies": [
+              2
+            ],
+            "details": "Create views/layouts/main.ejs with HTML5 boilerplate structure. Include CDN links: HTMX (https://unpkg.com/htmx.org@latest), Tailwind CSS (https://cdn.tailwindcss.com), and Chart.js (https://cdn.jsdelivr.net/npm/chart.js). Set up content injection points using EJS syntax (<%- body %>) for dynamic content. Include meta tags for responsive design and charset UTF-8.",
+            "status": "done",
+            "testStrategy": "Render a test page using the main layout and verify all CDN resources load correctly in the browser developer tools. Check that the body content injection works properly."
+          },
+          {
+            "id": 4,
+            "title": "Create reusable partial components",
+            "description": "Develop header, footer, and navigation partial templates with proper EJS syntax and structure",
+            "dependencies": [
+              3
+            ],
+            "details": "Create views/partials/header.ejs with site branding and top-level navigation elements. Implement views/partials/footer.ejs with copyright information and footer links. Build views/partials/navigation.ejs with menu items for Dashboard, Content Management, Digest Management, Configuration, and Analytics. Use EJS includes syntax (<%- include() %>) to integrate partials into the main layout.",
+            "status": "done",
+            "testStrategy": "Test each partial renders correctly when included in the main layout. Verify that data can be passed to partials using EJS locals."
+          },
+          {
+            "id": 5,
+            "title": "Build page templates with navigation state handling",
+            "description": "Create individual page templates for all sections and implement active navigation state management",
+            "dependencies": [
+              4
+            ],
+            "details": "Create EJS templates in views/pages/: dashboard.ejs, content-management.ejs, digest-management.ejs, configuration.ejs, and analytics.ejs. Each page should extend the main layout and include relevant partials. Implement active state handling in navigation.ejs by passing a 'currentPage' variable from routes and using conditional EJS logic to add active CSS classes. Set up Express routes for each page that render the appropriate template with the currentPage context.",
+            "status": "done",
+            "testStrategy": "Navigate through all pages and verify the active navigation state updates correctly. Test that each page properly extends the main layout and includes all partials. Verify HTMX functionality works on rendered pages."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement JWT Authentication Middleware",
+        "description": "Create secure JWT-based authentication system with Express sessions for protecting dashboard routes",
+        "details": "1. Install dependencies: npm install jsonwebtoken@9.0.2 express-session@1.18.0 connect-pg-simple@9.0.1\n2. Create authentication middleware:\n   - JWT token generation with expiry (24h)\n   - Token verification middleware\n   - Session store configuration with PostgreSQL\n3. Implement login route handler:\n   - POST /auth/login (returns JWT)\n   - POST /auth/logout (invalidates session)\n   - GET /auth/verify (checks token validity)\n4. Create auth guard middleware for protected routes\n5. Add CSRF protection for forms: npm install csurf@1.11.0\n6. Implement remember-me functionality with refresh tokens",
+        "testStrategy": "1. Test login with valid/invalid credentials\n2. Verify JWT expiration handling\n3. Test session persistence across server restarts\n4. Validate CSRF token generation and verification\n5. Test concurrent session handling\n6. Verify logout properly invalidates tokens",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install and Configure Authentication Dependencies",
+            "description": "Install required npm packages for JWT authentication, session management, and CSRF protection",
+            "dependencies": [],
+            "details": "Execute npm install commands for jsonwebtoken@9.0.2, express-session@1.18.0, connect-pg-simple@9.0.1, and csurf@1.11.0. Verify all packages are correctly installed in package.json and create initial configuration files for session store settings.",
+            "status": "done",
+            "testStrategy": "Verify package installation by checking package.json and node_modules. Create a simple test script to ensure all modules can be imported without errors."
+          },
+          {
+            "id": 2,
+            "title": "Configure PostgreSQL Session Store",
+            "description": "Set up connect-pg-simple to store Express sessions in PostgreSQL database",
+            "dependencies": [
+              1
+            ],
+            "details": "Create session store configuration using connect-pg-simple with PostgreSQL connection. Configure session table schema, connection pooling, and automatic session cleanup. Set appropriate session cookie options including httpOnly, secure flags, and expiration times.",
+            "status": "done",
+            "testStrategy": "Test database connection and session table creation. Verify sessions are correctly stored and retrieved from PostgreSQL. Test session expiration and cleanup mechanisms."
+          },
+          {
+            "id": 3,
+            "title": "Implement JWT Token Generation and Verification",
+            "description": "Create JWT utility functions for token generation, verification, and refresh token handling",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop JWT service module with functions for: generating access tokens (24h expiry), creating refresh tokens for remember-me functionality, verifying token signatures and expiration, extracting payload data from tokens. Include proper error handling for expired or invalid tokens.",
+            "status": "done",
+            "testStrategy": "Unit test token generation with various payloads, verify token expiration behavior, test invalid token rejection, and ensure refresh token flow works correctly."
+          },
+          {
+            "id": 4,
+            "title": "Create Authentication Routes and Middleware",
+            "description": "Implement login, logout, and verification endpoints with authentication middleware",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Create POST /auth/login endpoint that validates credentials and returns JWT with refresh token option. Implement POST /auth/logout to invalidate sessions and tokens. Add GET /auth/verify for token validation. Develop authentication middleware to protect routes by verifying JWT tokens from Authorization header or cookies.",
+            "status": "done",
+            "testStrategy": "Integration test all auth endpoints with valid/invalid credentials. Test middleware protection on sample routes. Verify proper HTTP status codes and error messages."
+          },
+          {
+            "id": 5,
+            "title": "Implement CSRF Protection and Security Hardening",
+            "description": "Add CSRF protection to forms and implement additional security measures",
+            "dependencies": [
+              4
+            ],
+            "details": "Configure csurf middleware for CSRF token generation and validation on form submissions. Implement rate limiting on authentication endpoints. Add security headers for XSS protection. Ensure all cookies have proper security flags (httpOnly, secure, sameSite). Document security best practices for frontend integration.",
+            "status": "done",
+            "testStrategy": "Test CSRF token validation on protected forms. Attempt CSRF attacks to verify protection. Test rate limiting behavior. Verify all security headers are properly set in responses."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Build Dashboard Page with Real-time Metrics",
+        "description": "Create the main dashboard page displaying today's capture statistics, recent activity, and system health indicators",
+        "details": "1. Create dashboard.ejs with responsive grid layout using Tailwind CSS\n2. Implement metric cards:\n   - Today's captures count (hx-get='/api/metrics/today' hx-trigger='every 30s')\n   - Category distribution pie chart\n   - Processing success rate gauge\n   - Active errors/warnings count\n3. Recent captures component:\n   - HTMX infinite scroll (hx-get='/api/content/recent?page={page}')\n   - Thumbnail display with lazy loading\n   - Quick action buttons (view, edit, delete)\n4. Weekly trends chart using Chart.js:\n   - Line chart showing 7-day capture trend\n   - Category stacked bar chart\n5. Quick action buttons:\n   - Manual content entry modal\n   - Generate digest button\n   - View today's digest link\n6. WebSocket integration for real-time updates using HTMX extensions",
+        "testStrategy": "1. Test metric cards update every 30 seconds\n2. Verify infinite scroll loads correct pages\n3. Test Chart.js renders correctly with real data\n4. Validate responsive layout on mobile/tablet/desktop\n5. Test quick actions trigger correct modals/pages\n6. Verify WebSocket fallback to polling works",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create dashboard.ejs with responsive grid layout",
+            "description": "Set up the main dashboard view template with Tailwind CSS grid system for responsive design",
+            "dependencies": [],
+            "details": "Create views/dashboard.ejs file with HTML structure using Tailwind CSS classes for responsive grid layout. Include container divs for metric cards, recent captures section, charts area, and quick actions. Set up proper head section with required CSS/JS imports for Chart.js and HTMX.",
+            "status": "done",
+            "testStrategy": "Verify responsive behavior at different breakpoints (mobile, tablet, desktop). Test grid layout with placeholder content. Validate HTML structure and Tailwind classes render correctly."
+          },
+          {
+            "id": 2,
+            "title": "Implement metric cards with real-time updates",
+            "description": "Build four metric cards displaying today's captures, category distribution, success rate, and active errors with HTMX polling",
+            "dependencies": [
+              1
+            ],
+            "details": "Create reusable metric card components within dashboard.ejs. Implement: 1) Today's captures counter with hx-get='/api/metrics/today' and hx-trigger='every 30s', 2) Category distribution using a small pie chart (Chart.js), 3) Processing success rate gauge visualization, 4) Active errors/warnings count with color-coded indicators. Each card should have loading states and error handling.",
+            "status": "in-progress",
+            "testStrategy": "Test HTMX polling functionality with mock API endpoints. Verify Chart.js renders correctly in metric cards. Test error states and loading indicators. Validate real-time updates work without page refresh."
+          },
+          {
+            "id": 3,
+            "title": "Build recent captures component with infinite scroll",
+            "description": "Implement the recent captures section with HTMX infinite scroll, thumbnails, and quick action buttons",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a scrollable container for recent captures with HTMX infinite scroll using hx-get='/api/content/recent?page={page}'. Implement lazy loading for thumbnails using intersection observer or HTMX extensions. Add quick action buttons (view, edit, delete) for each capture item with appropriate HTMX attributes for AJAX operations. Include loading spinner and 'no more items' indicator.",
+            "status": "pending",
+            "testStrategy": "Test infinite scroll triggers correctly when reaching bottom. Verify lazy loading of images works properly. Test quick action buttons trigger correct API calls. Validate pagination state management."
+          },
+          {
+            "id": 4,
+            "title": "Implement weekly trends charts with Chart.js",
+            "description": "Create interactive charts showing 7-day capture trends and category distribution over time",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Implement two Chart.js visualizations: 1) Line chart displaying daily capture counts for the past 7 days with smooth animations and tooltips, 2) Stacked bar chart showing category distribution per day. Both charts should fetch data via HTMX (hx-get='/api/metrics/weekly-trends' with hx-trigger='load, every 5m'). Include responsive sizing and dark mode support if applicable.",
+            "status": "pending",
+            "testStrategy": "Test Chart.js initialization and data binding. Verify charts update correctly with new data. Test responsive behavior and tooltips. Validate chart animations and interactions work smoothly."
+          },
+          {
+            "id": 5,
+            "title": "Add quick actions and WebSocket real-time updates",
+            "description": "Implement quick action buttons and integrate WebSocket for live dashboard updates using HTMX extensions",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Add quick action buttons: 1) Manual content entry modal triggered by HTMX (hx-get='/api/content/new-modal' hx-target='#modal-container'), 2) Generate digest button with loading state, 3) View today's digest link. Integrate HTMX WebSocket extension for real-time updates - configure hx-ws-connect='/ws/dashboard' on main container to receive live metric updates, new captures, and system alerts without polling.",
+            "status": "pending",
+            "testStrategy": "Test modal opens correctly and form submission works. Verify WebSocket connection establishes and handles reconnection. Test real-time updates reflect immediately in all dashboard components. Validate fallback to polling if WebSocket fails."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Create Content Management Page with Advanced Filtering",
+        "description": "Build comprehensive content browsing interface with pagination, search, filtering, and bulk operations",
+        "details": "1. Create content-management.ejs with data table layout\n2. Implement server-side pagination:\n   - GET /api/content?page=1&limit=50&sort=created_desc\n   - HTMX pagination controls (hx-boost='true')\n3. Advanced filtering UI:\n   - Category multi-select dropdown\n   - Date range picker (flatpickr@4.6.13)\n   - Status filter (pending/processed/failed)\n   - Domain filter with autocomplete\n4. Full-text search:\n   - PostgreSQL ts_vector search implementation\n   - HTMX search-as-you-type (hx-trigger='keyup changed delay:500ms')\n5. Bulk operations toolbar:\n   - Select all/none checkboxes\n   - Bulk delete with confirmation modal\n   - Bulk re-categorize dropdown\n   - Bulk tag management\n6. Export functionality:\n   - JSON/CSV/Markdown export options\n   - Server-side streaming for large exports",
+        "testStrategy": "1. Test pagination with 10k+ records\n2. Verify filter combinations work correctly\n3. Test search performance and relevance\n4. Validate bulk operations handle 100+ items\n5. Test export formats are valid\n6. Verify UI remains responsive during operations",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create content-management.ejs template with responsive data table layout",
+            "description": "Design and implement the main content management page using EJS templating with Bootstrap 5 components, including the table structure, header, and container elements",
+            "dependencies": [],
+            "details": "Create content-management.ejs in backend/views/ directory following existing EJS patterns. Implement responsive Bootstrap 5 table with columns for: checkbox selection, title, excerpt, category, source domain, status badge, created date, and action buttons. Include container structure for filters, search bar, bulk operations toolbar, and export options. Use existing partials for header/footer consistency.",
+            "status": "pending",
+            "testStrategy": "Manual testing of responsive layout across devices, verify table renders correctly with sample data, ensure all UI elements are properly positioned and styled according to Bootstrap 5 standards"
+          },
+          {
+            "id": 2,
+            "title": "Implement server-side pagination API endpoint with sorting",
+            "description": "Create GET /api/content endpoint with pagination, sorting, and response formatting to support the content table",
+            "dependencies": [],
+            "details": "Implement in backend/src/routes/contentRoutes.js: GET /api/content endpoint accepting query parameters (page, limit, sort, order). Add pagination logic in contentService.js using SQL LIMIT/OFFSET. Support sorting by: created_at, title, category, status. Return response with: data array, total count, current page, total pages. Default to 50 items per page, sort by created_at DESC. Include proper error handling and input validation.",
+            "status": "pending",
+            "testStrategy": "Unit tests for pagination logic with edge cases (empty results, invalid page numbers), integration tests for API endpoint with various parameter combinations, verify correct SQL queries are generated, test performance with large datasets"
+          },
+          {
+            "id": 3,
+            "title": "Build advanced filtering UI with HTMX integration",
+            "description": "Implement filter components including category multi-select, date range picker, status filter, and domain autocomplete with HTMX triggers",
+            "dependencies": [
+              1
+            ],
+            "details": "Add to content-management.ejs: Category multi-select using Select2 or similar, integrate flatpickr@4.6.13 for date range selection, create status filter checkboxes (pending/processed/failed), implement domain autocomplete input. Configure HTMX attributes: hx-get='/api/content', hx-target='#content-table-body', hx-trigger for each filter change. Create filter state management to combine all active filters. Style filters in collapsible sidebar or horizontal bar.",
+            "status": "pending",
+            "testStrategy": "Test each filter independently and in combination, verify HTMX requests include correct parameters, ensure filter state persists during pagination, test filter reset functionality, verify responsive behavior on mobile"
+          },
+          {
+            "id": 4,
+            "title": "Implement PostgreSQL full-text search with HTMX live search",
+            "description": "Add database search capabilities using PostgreSQL ts_vector and create search UI with debounced HTMX requests",
+            "dependencies": [
+              2
+            ],
+            "details": "Database: Add ts_vector column to content table if not exists, create GIN index for performance, implement search query in contentService.js using plainto_tsquery. Frontend: Add search input with hx-get='/api/content', hx-trigger='keyup changed delay:500ms', hx-target='#content-table-body'. Backend: Extend /api/content to accept 'search' parameter, combine with other filters using AND logic. Highlight search terms in results.",
+            "status": "pending",
+            "testStrategy": "Test search with various queries including special characters, verify debounce timing prevents excessive requests, test search combined with filters and pagination, benchmark search performance, test edge cases like empty search or no results"
+          },
+          {
+            "id": 5,
+            "title": "Create bulk operations toolbar with modals and export functionality",
+            "description": "Implement checkbox selection system, bulk action buttons with confirmation modals, and streaming export capabilities",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Selection: Add master checkbox in table header, individual row checkboxes with state management, selection counter display. Bulk actions: Delete button triggering Bootstrap modal for confirmation, bulk categorize with category dropdown, bulk tag management interface. Implement endpoints: POST /api/content/bulk-delete, POST /api/content/bulk-categorize. Export: Add format selector (JSON/CSV/Markdown), implement GET /api/content/export with streaming response, use Node.js streams for large datasets, add progress indicator for exports.",
+            "status": "pending",
+            "testStrategy": "Test select all/none functionality with pagination, verify bulk operations only affect selected items, test confirmation modals prevent accidental actions, verify export formats are valid and complete, test streaming exports with large datasets for memory efficiency"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Develop Content Detail Modal System",
+        "description": "Create modal interface for viewing and editing individual content items with full metadata display",
+        "details": "1. Implement modal system using HTMX:\n   - hx-get='/content/{id}/modal' hx-target='#modal-container'\n   - CSS transitions for smooth open/close\n   - Keyboard navigation (ESC to close, arrows for prev/next)\n2. Modal content tabs:\n   - Content tab: Rendered markdown with syntax highlighting (highlight.js@11.9.0)\n   - Metadata tab: All fields in editable form\n   - AI Results tab: Classification details, confidence scores\n   - Processing tab: Action results by category\n   - History tab: Edit history and digest inclusions\n3. Inline editing features:\n   - HTMX form submissions (hx-post='/content/{id}/update')\n   - Real-time validation feedback\n   - Autosave with debouncing\n4. Action buttons:\n   - Re-process with options\n   - Copy formatted snippet\n   - Share externally\n   - Add to digest\n5. Similar content suggestions using PostgreSQL similarity",
+        "testStrategy": "1. Test modal opens/closes smoothly\n2. Verify all tabs load correct data\n3. Test inline editing saves correctly\n4. Validate keyboard navigation works\n5. Test re-processing triggers correct pipeline\n6. Verify similar content algorithm accuracy",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Modal Foundation with HTMX Integration",
+            "description": "Create the base modal system with HTMX triggers, container structure, and CSS transitions for smooth animations",
+            "dependencies": [],
+            "details": "Build modal container div with proper z-index layering, overlay backdrop, and modal content wrapper. Implement HTMX endpoints for GET /content/{id}/modal that returns modal HTML. Add CSS transitions for opacity and transform properties for smooth open/close animations. Include keyboard event listeners for ESC key and arrow navigation between content items.",
+            "status": "pending",
+            "testStrategy": "Test modal opening/closing with different content IDs, verify keyboard shortcuts work correctly, test CSS transitions in different browsers, verify HTMX requests are properly formatted"
+          },
+          {
+            "id": 2,
+            "title": "Design and Implement Tab Navigation System",
+            "description": "Create the tabbed interface within the modal for Content, Metadata, AI Results, Processing, and History views",
+            "dependencies": [
+              1
+            ],
+            "details": "Build tab navigation component with active state management. Create tab panels for: Content (markdown viewer), Metadata (form fields), AI Results (classification display), Processing (action results), and History (timeline view). Implement tab switching without page reload using HTMX or JavaScript. Style active/inactive tab states with proper accessibility attributes.",
+            "status": "pending",
+            "testStrategy": "Verify all tabs switch correctly, test keyboard navigation between tabs, ensure proper ARIA labels for accessibility, validate that tab content loads dynamically"
+          },
+          {
+            "id": 3,
+            "title": "Implement Content Rendering and Inline Editing",
+            "description": "Build the markdown renderer with syntax highlighting and create inline editing functionality with HTMX form submissions",
+            "dependencies": [
+              2
+            ],
+            "details": "Integrate highlight.js@11.9.0 for syntax highlighting in code blocks. Create editable form fields in metadata tab with HTMX attributes (hx-post='/content/{id}/update'). Implement debounced autosave functionality (500ms delay). Add real-time validation feedback using HTMX response handling. Create loading states during save operations.",
+            "status": "pending",
+            "testStrategy": "Test markdown rendering with various content types, verify syntax highlighting works for multiple languages, test autosave timing and conflict resolution, validate form submission error handling"
+          },
+          {
+            "id": 4,
+            "title": "Build Action Buttons and Processing Features",
+            "description": "Implement the action button panel with re-process, copy, share, and digest addition functionality",
+            "dependencies": [
+              2
+            ],
+            "details": "Create action button toolbar with: Re-process button with options dropdown (select specific processors), Copy formatted snippet (with format selection), Share externally (generate shareable link), Add to digest (with digest selection). Implement HTMX endpoints for each action. Add confirmation dialogs for destructive actions. Include loading states and success/error feedback.",
+            "status": "pending",
+            "testStrategy": "Test each action button functionality, verify confirmation dialogs appear for appropriate actions, test error handling for failed operations, validate clipboard API integration"
+          },
+          {
+            "id": 5,
+            "title": "Implement Similar Content Suggestions Engine",
+            "description": "Create the similarity matching system using PostgreSQL's text search and display related content in the modal",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement PostgreSQL full-text search using tsvector on content body and metadata. Create similarity scoring algorithm combining text similarity and metadata matches. Build UI component to display top 5 similar items with relevance scores. Add click handlers to navigate to similar content within the modal. Implement caching strategy for similarity calculations.",
+            "status": "pending",
+            "testStrategy": "Test similarity algorithm with various content types, verify performance with large datasets, test navigation between similar items, validate cache invalidation on content updates"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Configuration Management Interface",
+        "description": "Build comprehensive settings page for managing categories, AI providers, and system configuration",
+        "details": "1. Create tabbed configuration interface:\n   - Categories & Actions tab\n   - AI Providers tab\n   - Domain Matchers tab\n   - User Settings tab\n   - System Settings tab\n2. Category management:\n   - Drag-and-drop reordering (SortableJS@1.15.2)\n   - Category CRUD operations\n   - Action assignment checkboxes\n   - Alias management for AI responses\n3. AI provider configuration:\n   - Provider priority ordering\n   - Secure API key input fields\n   - Test connection buttons\n   - Confidence threshold sliders\n4. Domain matcher interface:\n   - Pattern testing tool\n   - Batch import/export\n   - Priority ordering\n5. Backup/restore functionality:\n   - JSON configuration export\n   - Import with validation\n   - Version tracking",
+        "testStrategy": "1. Test all CRUD operations save correctly\n2. Verify API keys are encrypted in storage\n3. Test drag-and-drop reordering persists\n4. Validate pattern matching works correctly\n5. Test backup/restore maintains all settings\n6. Verify form validation prevents invalid configs",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design and implement base configuration UI structure",
+            "description": "Create the foundational tabbed interface layout with routing and state management for the configuration management system",
+            "dependencies": [],
+            "details": "Build the main configuration page component with tab navigation using a modern UI library. Implement tab components for Categories & Actions, AI Providers, Domain Matchers, User Settings, and System Settings. Set up React Router or similar for tab navigation. Create a shared configuration context/store for managing state across tabs. Design responsive layout that works on desktop and mobile devices.",
+            "status": "pending",
+            "testStrategy": "Unit tests for tab navigation logic, integration tests for routing between tabs, visual regression tests for responsive layout, accessibility tests for keyboard navigation"
+          },
+          {
+            "id": 2,
+            "title": "Implement Categories & Actions management interface",
+            "description": "Build the category management tab with full CRUD operations, drag-and-drop reordering, and action assignment functionality",
+            "dependencies": [
+              1
+            ],
+            "details": "Integrate SortableJS@1.15.2 for drag-and-drop category reordering. Create forms for adding, editing, and deleting categories with validation. Implement checkbox grid for assigning actions to categories. Build alias management interface for mapping AI response variations to standard categories. Add bulk operations for category management. Ensure changes are persisted to backend API.",
+            "status": "pending",
+            "testStrategy": "Unit tests for CRUD operations, integration tests for drag-and-drop functionality, E2E tests for category-action assignment workflow, API mocking for backend interactions"
+          },
+          {
+            "id": 3,
+            "title": "Build AI Provider configuration panel",
+            "description": "Create the AI provider management interface with secure credential handling, priority ordering, and connection testing",
+            "dependencies": [
+              1
+            ],
+            "details": "Design secure input fields for API keys with show/hide toggle and encryption indicators. Implement drag-and-drop priority ordering for provider fallback sequence. Create connection test functionality with loading states and error handling. Add confidence threshold sliders (0-100%) for each provider. Build provider enable/disable toggles. Implement secure storage mechanism for API keys (encrypted in backend).",
+            "status": "pending",
+            "testStrategy": "Security tests for API key handling, unit tests for priority ordering logic, integration tests for connection testing, mock API responses for provider validation"
+          },
+          {
+            "id": 4,
+            "title": "Develop Domain Matcher configuration tools",
+            "description": "Create domain pattern management interface with testing capabilities and import/export functionality",
+            "dependencies": [
+              1
+            ],
+            "details": "Build pattern input interface with regex validation and syntax highlighting. Create real-time pattern testing tool with sample URL input and match visualization. Implement priority-based ordering system for matchers. Add batch import from CSV/JSON with validation feedback. Create export functionality for backup and sharing. Include pattern statistics and usage analytics display.",
+            "status": "pending",
+            "testStrategy": "Unit tests for regex pattern validation, integration tests for pattern matching engine, E2E tests for import/export workflows, performance tests for large pattern sets"
+          },
+          {
+            "id": 5,
+            "title": "Implement configuration backup/restore system",
+            "description": "Build comprehensive backup and restore functionality with version tracking and validation",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Create JSON export functionality that captures all configuration settings including categories, actions, AI providers (without keys), domain matchers, and user preferences. Implement import with schema validation and migration support for older versions. Add version tracking with timestamps and change descriptions. Build conflict resolution UI for import operations. Create scheduled auto-backup functionality. Implement configuration diff viewer for comparing versions.",
+            "status": "pending",
+            "testStrategy": "Unit tests for JSON serialization/deserialization, integration tests for version migration, E2E tests for full backup/restore cycle, validation tests for schema compatibility"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Build Analytics Dashboard with Interactive Charts",
+        "description": "Create comprehensive analytics page with interactive visualizations for content and system metrics",
+        "details": "1. Create analytics.ejs with customizable widget grid\n2. Implement Chart.js visualizations:\n   - Time series line chart for capture trends\n   - Doughnut chart for category distribution\n   - Bar chart for AI provider performance\n   - Heatmap for hourly activity patterns\n3. Interactive features:\n   - Date range selector with presets\n   - Drill-down capability on charts\n   - Export chart as image/PDF\n4. Performance metrics dashboard:\n   - Processing time histograms\n   - Error rate trends\n   - API response time monitoring\n5. Cost analysis section:\n   - AI provider usage breakdown\n   - Projected monthly costs\n   - Usage optimization suggestions\n6. Custom dashboard builder:\n   - Drag-and-drop widget placement\n   - Widget size configuration\n   - Save custom layouts",
+        "testStrategy": "1. Test charts render with various data volumes\n2. Verify date range filtering updates all widgets\n3. Test export functionality produces valid files\n4. Validate drill-down navigation works correctly\n5. Test custom dashboard persistence\n6. Verify real-time updates don't cause flicker",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Create Digest Management System",
+        "description": "Build digest generation, preview, and delivery management interface with calendar view",
+        "details": "1. Implement calendar view using vanilla JavaScript:\n   - Monthly calendar grid\n   - Digest status indicators (generated/scheduled/sent)\n   - Click to view digest details\n2. Digest generation interface:\n   - Date range selector\n   - Content filtering options\n   - Template selection dropdown\n   - Preview button with loading state\n3. Live preview system:\n   - Markdown rendering with marked@12.0.0\n   - Template variable substitution\n   - Drag-and-drop section reordering\n4. Template editor:\n   - CodeMirror@6.0.1 for syntax highlighting\n   - Live preview updates\n   - Template variable documentation\n5. Delivery configuration:\n   - Email scheduling with cron expressions\n   - Recipient management\n   - Delivery status tracking\n6. Export options:\n   - HTML/PDF generation (puppeteer@22.0.0)\n   - Markdown export\n   - Audio generation integration",
+        "testStrategy": "1. Test calendar displays correct digest statuses\n2. Verify preview matches final output\n3. Test template changes apply correctly\n4. Validate email delivery scheduling works\n5. Test all export formats are valid\n6. Verify drag-and-drop saves new order",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement HTMX-Powered Form Handling",
+        "description": "Create reusable form components with HTMX for validation, submission, and error handling",
+        "details": "1. Create form component library:\n   - Input field with validation states\n   - Select dropdowns with search\n   - File upload with progress\n   - Date/time pickers\n2. HTMX form attributes:\n   - hx-post for submissions\n   - hx-validate for client-side validation\n   - hx-indicator for loading states\n   - hx-swap for error messages\n3. Server-side validation:\n   - Express-validator@7.0.1 integration\n   - Custom validation rules\n   - Consistent error response format\n4. Progressive enhancement:\n   - Forms work without JavaScript\n   - HTMX enhances when available\n   - Graceful degradation\n5. Reusable patterns:\n   - Form macro templates\n   - Validation rule sets\n   - Error display components",
+        "testStrategy": "1. Test forms work with JavaScript disabled\n2. Verify validation messages display correctly\n3. Test file uploads with progress indication\n4. Validate error states are accessible\n5. Test form submission success/failure flows\n6. Verify CSRF protection works correctly",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Build Notification and Alert System",
+        "description": "Create real-time notification system for processing failures, system alerts, and user actions",
+        "details": "1. Implement notification types:\n   - Toast notifications (success/error/warning/info)\n   - Bell icon with notification count\n   - Notification dropdown panel\n2. Server-sent events setup:\n   - EventSource API for real-time updates\n   - HTMX SSE extension integration\n   - Fallback to polling for older browsers\n3. Notification categories:\n   - Processing failures\n   - System health alerts\n   - Digest generation complete\n   - Bulk operation results\n4. User preferences:\n   - Notification type toggles\n   - Email notification settings\n   - Quiet hours configuration\n5. Notification center:\n   - Mark as read/unread\n   - Delete notifications\n   - Filter by type/date",
+        "testStrategy": "1. Test SSE connection remains stable\n2. Verify notifications appear in real-time\n3. Test notification preferences persist\n4. Validate email notifications send correctly\n5. Test notification center CRUD operations\n6. Verify fallback polling works correctly",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Optimize Database Queries and Indexing",
+        "description": "Analyze and optimize PostgreSQL queries for dashboard performance with proper indexing strategy",
+        "details": "1. Query analysis using EXPLAIN ANALYZE:\n   - Identify slow queries in dashboard\n   - Find missing indexes\n   - Optimize JOIN operations\n2. Create strategic indexes:\n   - content(created_at, category_id) for filtering\n   - content(tsv) GIN index for full-text search\n   - processing_results(content_id, status) for joins\n   - Partial indexes for common WHERE clauses\n3. Implement query optimizations:\n   - Materialized views for analytics\n   - Query result caching with Redis\n   - Prepared statements for common queries\n4. Database connection pooling:\n   - Configure pg-pool settings\n   - Monitor connection usage\n   - Implement query timeouts\n5. Add query performance monitoring:\n   - Slow query logging\n   - Performance metrics collection\n   - Alert on degraded performance",
+        "testStrategy": "1. Benchmark queries before/after optimization\n2. Test with 100k+ content records\n3. Verify indexes are used by queries\n4. Test materialized view refresh performance\n5. Validate connection pool handles load\n6. Monitor query performance over time",
+        "priority": "high",
+        "dependencies": [
+          3,
+          4,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement Mobile-Responsive Design",
+        "description": "Ensure all dashboard pages are fully responsive and usable on mobile devices",
+        "details": "1. Mobile-first responsive design:\n   - Breakpoints: 640px, 768px, 1024px, 1280px\n   - Touch-friendly tap targets (min 44px)\n   - Swipe gestures for navigation\n2. Mobile-specific optimizations:\n   - Collapsed navigation menu\n   - Bottom navigation bar for key actions\n   - Simplified table views for small screens\n   - Card-based layouts for content items\n3. Performance optimizations:\n   - Lazy loading images\n   - Reduced data transfer on mobile\n   - Service worker for offline access\n4. Touch interactions:\n   - Swipe to delete/archive\n   - Pull to refresh\n   - Long press for context menus\n5. Progressive Web App features:\n   - Web app manifest\n   - Install prompt\n   - Offline content viewing",
+        "testStrategy": "1. Test on real devices (iOS/Android)\n2. Verify touch targets meet size requirements\n3. Test gestures work smoothly\n4. Validate offline functionality works\n5. Test responsive breakpoints\n6. Verify performance on 3G connections",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Create Error Handling and Recovery System",
+        "description": "Build comprehensive error handling with user-friendly messages and recovery options",
+        "details": "1. Error page templates:\n   - 404 Not Found with search\n   - 500 Server Error with details\n   - 403 Forbidden with login link\n   - Maintenance mode page\n2. HTMX error handling:\n   - Global error interceptor\n   - Retry mechanisms for failed requests\n   - Graceful degradation strategies\n3. User-friendly error messages:\n   - Plain language explanations\n   - Suggested actions\n   - Contact support options\n4. Error logging and monitoring:\n   - Structured error logging\n   - Error aggregation by type\n   - Alert on error spikes\n5. Recovery mechanisms:\n   - Auto-save form data\n   - Session recovery after errors\n   - Bulk operation rollback",
+        "testStrategy": "1. Test each error page renders correctly\n2. Verify HTMX errors show appropriate messages\n3. Test retry mechanisms work correctly\n4. Validate error logging captures details\n5. Test form data recovery after errors\n6. Verify session recovery works properly",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2,
+          10
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Implement Performance Monitoring and Optimization",
+        "description": "Add client-side performance monitoring and implement optimization strategies",
+        "details": "1. Performance monitoring setup:\n   - Web Vitals measurement (LCP, FID, CLS)\n   - Custom performance marks\n   - Resource timing analysis\n2. Client-side optimizations:\n   - Critical CSS inlining\n   - JavaScript lazy loading\n   - Image optimization and WebP support\n   - Font loading optimization\n3. Caching strategies:\n   - HTTP caching headers\n   - Service worker caching\n   - LocalStorage for user preferences\n4. Bundle optimization:\n   - Tree shaking unused code\n   - Code splitting by route\n   - Compression (gzip/brotli)\n5. Performance budget:\n   - Page weight limits\n   - Load time targets\n   - Automated performance testing",
+        "testStrategy": "1. Test with Lighthouse CI\n2. Verify Web Vitals meet targets\n3. Test on slow 3G connections\n4. Validate caching strategies work\n5. Test service worker updates correctly\n6. Monitor real user metrics",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          4,
+          11,
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Create Documentation and Help System",
+        "description": "Build in-app documentation, tooltips, and contextual help for all features",
+        "details": "1. In-app help system:\n   - Contextual help tooltips\n   - Feature tour for new users\n   - Keyboard shortcut reference\n   - FAQ section\n2. Documentation pages:\n   - Getting started guide\n   - Feature documentation\n   - API reference\n   - Troubleshooting guide\n3. Interactive tutorials:\n   - Step-by-step onboarding\n   - Feature discovery prompts\n   - Video tutorials integration\n4. Search functionality:\n   - Full-text search in docs\n   - Auto-complete suggestions\n   - Related articles\n5. Feedback mechanism:\n   - Help usefulness rating\n   - Feature request form\n   - Bug report integration",
+        "testStrategy": "1. Test help tooltips display correctly\n2. Verify tour completes all steps\n3. Test documentation search accuracy\n4. Validate keyboard shortcuts work\n5. Test feedback submission works\n6. Verify help content is accessible",
+        "priority": "low",
+        "dependencies": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-06-25T02:47:43.577Z",
+      "updated": "2025-06-25T06:17:14.202Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

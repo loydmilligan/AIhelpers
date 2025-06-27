@@ -1,0 +1,11 @@
+# Task ID: 7
+# Title: Setup Web Application Backend
+# Status: to-do
+# Dependencies: 6
+# Priority: medium
+# Description: Set up a basic web server using Flask or FastAPI to serve the web application.
+# Details:
+1. Choose a web framework (Flask or FastAPI) and add it to `requirements.txt`.
+2. Create a `src/webapp` directory for the web application code.
+3. Create a `src/webapp/main.py` file to define the API endpoints.
+4. The backend should be able to serve static files (HTML, CSS, JS).

@@ -1,0 +1,83 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Python CLI Project Structure",
+        "description": "Create the basic file and directory structure for the Python CLI application.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "to-do"
+      },
+      {
+        "id": 2,
+        "title": "Implement Template Parser",
+        "description": "Develop the logic to read and parse prompt templates to find placeholders.",
+        "priority": "high",
+        "dependencies": [1],
+        "status": "to-do"
+      },
+      {
+        "id": 3,
+        "title": "Implement Interactive Q&A Module",
+        "description": "Create the interactive command-line interface to ask the user questions based on the parsed template variables.",
+        "priority": "high",
+        "dependencies": [2],
+        "status": "to-do"
+      },
+      {
+        "id": 4,
+        "title": "Implement Data Formatter",
+        "description": "Convert the user's answers into a JSON file.",
+        "priority": "high",
+        "dependencies": [3],
+        "status": "to-do"
+      },
+      {
+        "id": 5,
+        "title": "Implement AI Assembler",
+        "description": "Send the template, user data, and a meta-prompt to an AI API to generate the final prompt.",
+        "priority": "high",
+        "dependencies": [4],
+        "status": "to-do"
+      },
+      {
+        "id": 6,
+        "title": "Implement Output Handling",
+        "description": "Handle the output from the AI and save it to a file.",
+        "priority": "medium",
+        "dependencies": [5],
+        "status": "to-do"
+      },
+      {
+        "id": 7,
+        "title": "Setup Web Application Backend",
+        "description": "Set up a basic web server using Flask or FastAPI to serve the web application.",
+        "priority": "medium",
+        "dependencies": [6],
+        "status": "to-do"
+      },
+      {
+        "id": 8,
+        "title": "Create Web App Frontend",
+        "description": "Create the HTML, CSS, and JavaScript for the web application interface.",
+        "priority": "medium",
+        "dependencies": [7],
+        "status": "to-do"
+      },
+      {
+        "id": 9,
+        "title": "Implement Web App API Endpoints",
+        "description": "Create the API endpoints to connect the frontend to the backend logic.",
+        "priority": "medium",
+        "dependencies": [8],
+        "status": "to-do"
+      }
+    ],
+    "metadata": {
+      "created": "2025-06-26T00:00:00.000Z",
+      "updated": "2025-06-26T00:00:00.000Z",
+      "description": "Tasks for AI Helpers project"
+    }
+  }
+}

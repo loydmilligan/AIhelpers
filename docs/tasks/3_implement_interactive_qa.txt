@@ -1,0 +1,11 @@
+# Task ID: 3
+# Title: Implement Interactive Q&A Module
+# Status: to-do
+# Dependencies: 2
+# Priority: high
+# Description: Create the interactive command-line interface to ask the user questions based on the parsed template variables.
+# Details:
+1. In `main.py`, use the `click` library to create a CLI command.
+2. The command should take the path to a template file as an argument.
+3. For each variable extracted by the template parser, prompt the user for input.
+4. Store the user's answers in a dictionary.

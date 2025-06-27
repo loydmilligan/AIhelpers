@@ -1,0 +1,124 @@
+# Gemini Code Assist Exclusion File for AIhelpers Project
+# This file prevents irrelevant, sensitive, or large files from being included
+# in the context sent to Gemini for chat, code generation, and analysis.
+
+# Version Control Metadata
+.git/
+.gitignore
+.gitattributes
+
+# Python-Specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+.pytest_cache/
+.tox/
+.nox/
+venv/
+.venv/
+env/
+.env/
+ENV/
+env.bak/
+venv.bak/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual Environment Directories (common names)
+aihelpers-env/
+aihelpers_env/
+.aihelpers-env/
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS-Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Documentation Build Artifacts
+docs/_build/
+docs/.doctrees/
+.sphinx-build/
+site/
+
+# Testing and Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+
+# Jupyter Notebooks (if any)
+.ipynb_checkpoints/
+*.ipynb
+
+# Package Management
+*.lock
+Pipfile.lock
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Temporary Files
+tmp/
+temp/
+.tmp/
+.temp/
+
+# Research and Documentation (these are large and already processed)
+research/
+examples/large_examples/
+*.pdf
+*.docx
+
+# Generated Template Output (avoid including generated prompts in context)
+output/
+generated_prompts/
+*.generated.md
+*.generated.txt
+
+# Large Data Files
+*.json.bak
+*.yaml.bak
+*.csv
+*.xlsx
+
+# Security-Related Files
+.env
+.env.*
+secrets.yaml
+api_keys.txt
+credentials.json
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Compressed Files
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z

@@ -1,0 +1,10 @@
+# Task ID: 8
+# Title: Create Web App Frontend
+# Status: to-do
+# Dependencies: 7
+# Priority: medium
+# Description: Create the HTML, CSS, and JavaScript for the web application interface.
+# Details:
+1. Create an `index.html` file with a dropdown to select a prompt template.
+2. Use JavaScript to dynamically generate a form with input fields based on the selected template.
+3. Style the application with CSS for a clean and user-friendly interface.

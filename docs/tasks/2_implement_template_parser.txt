@@ -1,0 +1,10 @@
+# Task ID: 2
+# Title: Implement Template Parser
+# Status: to-do
+# Dependencies: 1
+# Priority: high
+# Description: Develop the logic to read and parse prompt templates to find placeholders.
+# Details:
+1. In `prompt_generator.py`, create a function to read a `.md` template file.
+2. Use regex to identify all placeholders in the format `{{variable_name}}`.
+3. The function should return a list of unique variable names found in the template.

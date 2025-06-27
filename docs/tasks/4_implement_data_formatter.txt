@@ -1,0 +1,10 @@
+# Task ID: 4
+# Title: Implement Data Formatter
+# Status: to-do
+# Dependencies: 3
+# Priority: high
+# Description: Convert the user's answers into a JSON file.
+# Details:
+1. Take the dictionary of user answers from the Q&A module.
+2. Create a function to serialize this dictionary into a JSON formatted string.
+3. Save the JSON string to a file named `prompt_data.json`.

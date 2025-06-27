@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: Implement AI Assembler
+# Status: to-do
+# Dependencies: 4
+# Priority: high
+# Description: Send the template, user data, and a meta-prompt to an AI API to generate the final prompt.
+# Details:
+1. Create a 'meta-prompt' that instructs the AI on how to assemble the final prompt.
+2. Create a function that takes the template content, the JSON data, and the meta-prompt as input.
+3. This function will make an API call to an LLM service (e.g., Gemini).
+4. The API call should include the meta-prompt, the user's JSON data, and the original template.

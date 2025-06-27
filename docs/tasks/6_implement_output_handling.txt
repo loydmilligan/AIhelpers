@@ -1,0 +1,10 @@
+# Task ID: 6
+# Title: Implement Output Handling
+# Status: to-do
+# Dependencies: 5
+# Priority: medium
+# Description: Handle the output from the AI and save it to a file.
+# Details:
+1. Receive the generated prompt from the AI assembler.
+2. Prompt the user for a filename and location to save the generated prompt.
+3. Save the content to the specified path as a Markdown file.

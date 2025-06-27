@@ -1,0 +1,10 @@
+# Task ID: 9
+# Title: Implement Web App API Endpoints
+# Status: to-do
+# Dependencies: 8
+# Priority: medium
+# Description: Create the API endpoints to connect the frontend to the backend logic.
+# Details:
+1. Create an endpoint to list the available prompt templates.
+2. Create an endpoint to get the questions for a selected template.
+3. Create an endpoint to receive the user's answers, run the AI generation, and return the final prompt.

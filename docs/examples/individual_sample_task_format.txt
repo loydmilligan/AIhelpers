@@ -1,0 +1,67 @@
+# Task ID: 3
+# Title: Celery and Redis Integration
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Set up Celery with Redis as broker/backend for background task processing.
+# Details:
+1. Configure Celery in the Flask application
+2. Set up Redis connection for Celery broker and result backend
+3. Create celery_worker.py script to start Celery worker
+4. Configure Celery Beat for scheduled tasks
+5. Implement basic task structure in app/tasks/ directory
+6. Create task registration mechanism
+7. Set up error handling and logging for Celery tasks
+8. Configure task queues (default and priority queue for one-off articles)
+9. Implement Celery Beat schedule for periodic RSS feed polling
+10. Add Docker configuration for Redis service
+
+Example Celery configuration:
+```python
+from celery import Celery
+
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        backend=app.config['CELERY_RESULT_BACKEND'],
+        broker=app.config['CELERY_BROKER_URL']
+    )
+    celery.conf.update(app.config)
+    
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+    
+    celery.Task = ContextTask
+    return celery
+```
+
+# Test Strategy:
+Test Celery worker initialization. Verify Redis connection. Create test tasks to ensure proper execution and result handling. Test Celery Beat scheduling functionality.
+
+# Subtasks:
+## 1. Basic Celery Setup with Redis [done]
+### Dependencies: None
+### Description: Configure Celery to work with Redis as the message broker and result backend in a Django/Flask application
+### Details:
+Install required packages (Celery, Redis). Configure Celery application instance with Redis connection settings. Set up the basic project structure with proper imports. Create configuration files for Celery settings including broker and backend URLs. Test the connection between Celery and Redis.
+
+## 2. Celery Worker Configuration [done]
+### Dependencies: 3.1
+### Description: Set up and configure Celery workers to process tasks from the Redis queue
+### Details:
+Configure worker processes with appropriate concurrency settings. Implement task routing for different queues. Create task modules with proper decorators. Set up worker startup scripts. Configure worker logging. Implement task retry policies and timeouts. Test worker functionality with simple tasks.
+
+## 3. Celery Beat Scheduler Implementation for RSS Polling [done]
+### Dependencies: 3.1, 3.2
+### Description: Configure Celery Beat to schedule periodic RSS polling tasks
+### Details:
+Install and configure Celery Beat. Set up schedule configuration for RSS polling intervals. Create dedicated RSS polling tasks with proper error handling. Configure persistence for the scheduler. Implement dynamic schedule updates. Test the scheduler with various polling intervals.
+
+## 4. Task Queue Management (Default and Priority) [done]
+### Dependencies: 3.1, 3.2
+### Description: Implement and manage multiple task queues with different priority levels
+### Details:
+Configure multiple Redis queues (default and priority). Implement task routing based on priority. Set up worker configuration to consume from different queues with appropriate weights. Create monitoring tools for queue status. Implement rate limiting for specific queues. Test queue behavior under load conditions.
+

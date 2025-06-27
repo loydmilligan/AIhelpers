@@ -1,0 +1,12 @@
+# Task ID: 1
+# Title: Setup Python CLI Project Structure
+# Status: to-do
+# Dependencies: 
+# Priority: high
+# Description: Create the basic file and directory structure for the Python CLI application.
+# Details:
+1. Create a `src` directory for the main application code.
+2. Create `src/main.py` as the entry point for the CLI.
+3. Create `src/prompt_generator.py` for the core prompt generation logic.
+4. Create `src/utils.py` for helper functions.
+5. Add `click` to `requirements.txt` for building the CLI.
