@@ -4,6 +4,7 @@ Parsinator CLI entry point with enhanced task generation
 """
 import sys
 import os
+import re
 from pathlib import Path
 import json
 
@@ -517,6 +518,142 @@ def analyze_dependencies(briefs_directory, existing_tasks, confidence_threshold)
         import traceback
         traceback.print_exc()
         sys.exit(1)
+
+@cli.command()
+@click.argument('tasks_json_file', type=click.Path(exists=True))
+@click.option('--output-dir', default='./docs/tasks', help='Directory for individual task files')
+@click.option('--file-format', default='txt', help='File format for task files (txt/md)')
+def generate_task_files(tasks_json_file, output_dir, file_format):
+    """Generate individual task files from tasks.json"""
+    try:
+        click.echo(f"🔧 Generating individual task files from: {tasks_json_file}")
+        
+        handler = FileHandler()
+        tasks_data = handler.read_tasks_json(tasks_json_file)
+        
+        if not tasks_data or 'master' not in tasks_data:
+            click.echo("❌ Invalid tasks.json format")
+            sys.exit(1)
+        
+        tasks = tasks_data['master'].get('tasks', [])
+        if not tasks:
+            click.echo("❌ No tasks found in tasks.json")
+            sys.exit(1)
+        
+        # Ensure output directory exists
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+        
+        generated_files = []
+        
+        for task in tasks:
+            # Generate task file content
+            task_content = _generate_task_file_content(task, tasks, file_format)
+            
+            # Create filename
+            task_id = task.get('id', 'unknown')
+            task_title = task.get('title', 'untitled')
+            safe_title = re.sub(r'[^\w\s-]', '', task_title.lower())
+            safe_title = re.sub(r'[-\s]+', '_', safe_title)
+            
+            filename = f"{task_id}_{safe_title}.{file_format}"
+            file_path = output_path / filename
+            
+            # Write the file
+            handler.write_task_file(str(file_path), task_content)
+            generated_files.append(filename)
+        
+        click.echo(f"✅ Generated {len(generated_files)} task files in {output_dir}")
+        click.echo(f"   Files: {', '.join(generated_files[:5])}")
+        if len(generated_files) > 5:
+            click.echo(f"   ... and {len(generated_files) - 5} more")
+        
+    except FileIOError as e:
+        click.echo(f"❌ File error: {e}")
+        sys.exit(1)
+    except Exception as e:
+        click.echo(f"❌ Unexpected error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+def _generate_task_file_content(task, all_tasks, file_format='txt'):
+    """
+    Generate content for an individual task file
+    
+    Args:
+        task: Task dictionary
+        all_tasks: List of all tasks for dependency resolution
+        file_format: Format of the file (txt/md)
+    
+    Returns:
+        Formatted task file content
+    """
+    task_id = task.get('id', 'unknown')
+    title = task.get('title', 'Untitled Task')
+    status = task.get('status', 'to-do')
+    priority = task.get('priority', 'medium')
+    description = task.get('description', 'No description provided')
+    dependencies = task.get('dependencies', [])
+    
+    # Resolve dependency titles
+    dep_titles = []
+    if dependencies:
+        task_map = {t.get('id'): t.get('title', f"Task {t.get('id')}") for t in all_tasks}
+        dep_titles = [f"{dep_id} ({task_map.get(dep_id, 'Unknown')})" for dep_id in dependencies]
+    
+    # Generate content based on format
+    if file_format == 'md':
+        content = f"""# Task ID: {task_id}
+# Title: {title}
+# Status: {status}
+# Dependencies: {', '.join(map(str, dependencies)) if dependencies else ''}
+# Priority: {priority}
+# Description: {description}
+
+## Details:
+{description}
+
+## Dependencies:
+"""
+        if dep_titles:
+            for dep in dep_titles:
+                content += f"- {dep}\n"
+        else:
+            content += "None\n"
+        
+        content += f"""
+## Implementation Notes:
+Add specific implementation details here.
+
+## Test Strategy:
+Define how to test this task completion.
+"""
+    else:  # txt format (matches existing format)
+        content = f"""# Task ID: {task_id}
+# Title: {title}
+# Status: {status}
+# Dependencies: {', '.join(map(str, dependencies)) if dependencies else ''}
+# Priority: {priority}
+# Description: {description}
+# Details:
+{description}"""
+        
+        if dep_titles:
+            content += f"\n\n# Dependency Details:\n"
+            for dep in dep_titles:
+                content += f"- Requires completion of: {dep}\n"
+        
+        content += f"""
+
+# Implementation Strategy:
+Add specific implementation details here.
+
+# Test Strategy:
+Define how to test this task completion.
+"""
+    
+    return content
 
 if __name__ == "__main__":
     cli()

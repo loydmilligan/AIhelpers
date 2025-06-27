@@ -111,7 +111,10 @@ class FileHandler:
             FileIOError: If file cannot be written
         """
         try:
-            file_path = self._validate_output_path(filepath, ".txt")
+            # Allow both .txt and .md extensions for task files
+            file_path = Path(filepath).resolve()
+            if file_path.suffix.lower() not in ['.txt', '.md']:
+                raise ValueError(f"Invalid file extension. Expected: .txt or .md, got: {file_path.suffix}")
             
             # Create directory if it doesn't exist
             file_path.parent.mkdir(parents=True, exist_ok=True)

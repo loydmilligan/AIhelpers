@@ -461,7 +461,7 @@ class DependencyMapper:
                 continue
             
             task = task_collection.get_task(dep.from_task_id)
-            if task and dep.to_task_id not in task.dependencies:
+            if task and dep.to_task_id not in task.dependencies and dep.from_task_id != dep.to_task_id:
                 task.add_dependency(dep.to_task_id)
                 applied_count += 1
                 logger.debug(f"Applied dependency: Task {dep.from_task_id} -> {dep.to_task_id} ({dep.reason})")
