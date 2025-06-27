@@ -39,7 +39,7 @@
         "description": "Send the template, user data, and a meta-prompt to an AI API to generate the final prompt.",
         "priority": "high",
         "dependencies": [4],
-        "status": "to-do"
+        "status": "done"
       },
       {
         "id": 6,
@@ -47,7 +47,7 @@
         "description": "Handle the output from the AI and save it to a file.",
         "priority": "medium",
         "dependencies": [5],
-        "status": "to-do"
+        "status": "done"
       },
       {
         "id": 7,
@@ -55,7 +55,7 @@
         "description": "Set up a basic web server using Flask or FastAPI to serve the web application.",
         "priority": "medium",
         "dependencies": [6],
-        "status": "to-do"
+        "status": "done"
       },
       {
         "id": 8,
@@ -63,7 +63,7 @@
         "description": "Create the HTML, CSS, and JavaScript for the web application interface.",
         "priority": "medium",
         "dependencies": [7],
-        "status": "to-do"
+        "status": "in-progress"
       },
       {
         "id": 9,

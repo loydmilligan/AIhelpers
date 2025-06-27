@@ -1,6 +1,6 @@
 # Task ID: 7
 # Title: Setup Web Application Backend
-# Status: to-do
+# Status: done
 # Dependencies: 6
 # Priority: medium
 # Description: Set up a basic web server using Flask or FastAPI to serve the web application.

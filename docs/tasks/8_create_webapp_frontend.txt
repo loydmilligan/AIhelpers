@@ -1,6 +1,6 @@
 # Task ID: 8
 # Title: Create Web App Frontend
-# Status: to-do
+# Status: in-progress
 # Dependencies: 7
 # Priority: medium
 # Description: Create the HTML, CSS, and JavaScript for the web application interface.

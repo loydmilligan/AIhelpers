@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Helper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AI Prompt Helper</h1>
+        <p>Select a template to get started.</p>
+
+        <select id="template-select">
+            <option value="">-- Select a Template --</option>
+        </select>
+
+        <form id="prompt-form"></form>
+
+        <button id="generate-btn" style="display: none;">Generate Prompt</button>
+
+        <div id="output-container" style="display: none;">
+            <h2>Generated Prompt</h2>
+            <pre id="output-prompt"></pre>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

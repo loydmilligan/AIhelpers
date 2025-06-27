@@ -1,6 +1,6 @@
 # Task ID: 6
 # Title: Implement Output Handling
-# Status: to-do
+# Status: done
 # Dependencies: 5
 # Priority: medium
 # Description: Handle the output from the AI and save it to a file.
