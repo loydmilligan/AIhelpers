@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Form Test</title>
+</head>
+<body>
+    <h1>Simple Form Test</h1>
+    
+    <select id="test-select">
+        <option value="">Choose...</option>
+        <option value="test">Test Template</option>
+    </select>
+    
+    <form id="test-form"></form>
+    <button id="test-btn" style="display:none;">Test Button</button>
+    
+    <script>
+        console.log('Simple test script loaded');
+        
+        document.getElementById('test-select').addEventListener('change', function(e) {
+            console.log('Selection changed to:', e.target.value);
+            
+            const form = document.getElementById('test-form');
+            const button = document.getElementById('test-btn');
+            
+            if (e.target.value === 'test') {
+                // Clear form and add test fields
+                form.innerHTML = '';
+                
+                const h3 = document.createElement('h3');
+                h3.textContent = 'Test Form Fields:';
+                form.appendChild(h3);
+                
+                // Add test fields
+                const fields = ['name', 'email', 'message'];
+                fields.forEach(field => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <label>${field}:</label><br>
+                        <textarea name="${field}" rows="2"></textarea><br><br>
+                    `;
+                    form.appendChild(div);
+                });
+                
+                button.style.display = 'block';
+                console.log('Form created with', fields.length, 'fields');
+            } else {
+                form.innerHTML = '';
+                button.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

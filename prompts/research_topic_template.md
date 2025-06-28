@@ -1,34 +1,21 @@
 # Research a Topic Template
 
-## Role & Persona
-**[FILL IN: Research expert - e.g., "research analyst", "subject matter expert", "investigative specialist"]**
-
-**Example:** "You are a technology research analyst specializing in emerging web development trends, skilled at synthesizing information from multiple sources into actionable insights"
+You are {{research_expert_role}}.
 
 ## Research Purpose
-**[FILL IN: Why you need this research, how it will be used, background knowledge you have]**
-
-**Example:** "Evaluating whether to adopt Server Components in Next.js for our e-commerce platform rebuild. Will inform architecture decisions. I understand basic React but not familiar with latest Next.js features"
+{{research_purpose}}
 
 ## Research Scope
-**[FILL IN: Specific aspects to explore - "current state", "historical trends", "future implications"]**
-
-**Example:** "Focus on current adoption rates, performance benefits, development complexity, and compatibility with existing React ecosystem tools"
+{{research_scope}}
 
 ## Success Criteria
-**[FILL IN: What makes good research output - e.g., "comprehensive overview with sources", "actionable insights"]**
-
-**Example:** "Clear recommendation with pros/cons, evidence-based comparison to current architecture, specific migration considerations for our use case"
+{{success_criteria}}
 
 ## Constraints
-**[FILL IN: Time period focus, geographic scope, source quality requirements]**
+{{constraints}}
 
-**Example:** "Focus on 2024-2025 information, prioritize official documentation and established tech blogs, avoid Reddit discussions and unverified tutorials"
-
-## Audience
-**[FILL IN: Who will consume this research - "technical team", "general audience", "decision makers"]**
-
-**Example:** "Technical team lead (me) and one senior developer who will help implement the decision"
+## Target Audience
+{{target_audience}}
 
 ## Interaction Directives
 - Use Contextualized Prompting: Tailor research to specified use case

@@ -63,7 +63,7 @@
         "description": "Create the HTML, CSS, and JavaScript for the web application interface.",
         "priority": "medium",
         "dependencies": [7],
-        "status": "in-progress"
+        "status": "done"
       },
       {
         "id": 9,
@@ -71,7 +71,7 @@
         "description": "Create the API endpoints to connect the frontend to the backend logic.",
         "priority": "medium",
         "dependencies": [8],
-        "status": "to-do"
+        "status": "in-progress"
       }
     ],
     "metadata": {

@@ -97,6 +97,9 @@ python3 -m src.parsinator.main analyze-dependencies ./briefs/
 
 # Check generated tasks
 python3 -m src.parsinator.main analyze-tasks ./output/tasks.json
+
+# Generate individual task files
+python3 -m src.parsinator.main generate-task-files ./output/tasks.json --output-dir ./docs/tasks
 ```
 
 ## Brief Format Basics
@@ -178,10 +181,14 @@ python3 -m src.parsinator.main process-briefs my-project-briefs/ \
   --output-dir ./my-project-tasks \
   --project-name "My Awesome Project"
 
-# 3. Review results
+# 3. Generate individual task files
+python3 -m src.parsinator.main generate-task-files ./my-project-tasks/tasks.json \
+  --output-dir ./my-project-tasks/individual-tasks
+
+# 4. Review results
 python3 -m src.parsinator.main analyze-tasks ./my-project-tasks/tasks.json
 
-# 4. Start working!
+# 5. Start working!
 # Use tasks.json with your task management system
 ```
 

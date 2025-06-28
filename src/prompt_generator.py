@@ -14,7 +14,33 @@ def parse_template(template_path: Path) -> list[str]:
     """
     try:
         content = template_path.read_text()
+        
+        # First, try to find {{placeholder}} format
         placeholders = re.findall(r"\{\{([a-zA-Z0-9_]+)\}\}", content)
+        
+        # If no {{}} placeholders found, look for **[FILL IN: ...] format with section headers
+        if not placeholders:
+            placeholders = []
+            lines = content.split('\n')
+            current_section = None
+            
+            for line in lines:
+                # Look for section headers (## Header Name)
+                header_match = re.match(r'^## (.+)$', line.strip())
+                if header_match:
+                    # Convert section header to placeholder name
+                    section_name = header_match.group(1)
+                    # Remove special characters and convert to snake_case
+                    section_name = re.sub(r'[^\w\s]', '', section_name)
+                    section_name = re.sub(r'\s+', '_', section_name.strip().lower())
+                    current_section = section_name
+                
+                # Look for FILL IN instructions
+                elif '**[FILL IN:' in line and current_section:
+                    # Use the current section name as the placeholder
+                    if current_section and current_section not in placeholders:
+                        placeholders.append(current_section)
+        
         return sorted(list(set(placeholders)))
     except FileNotFoundError:
         return []
@@ -50,7 +76,7 @@ def assemble_prompt(template_content: str, user_data: dict, meta_prompt_path: Pa
         formatted_prompt = meta_prompt.replace("{{template}}", template_content).replace("{{user_data}}", user_data_json)
 
         # Call the Gemini API
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         response = model.generate_content(formatted_prompt)
 
         return response.text

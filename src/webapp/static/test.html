@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test</title>
+</head>
+<body>
+    <h1>Debug Test</h1>
+    <button onclick="testAPI()">Test Template Loading</button>
+    <div id="results"></div>
+
+    <script>
+        async function testAPI() {
+            const results = document.getElementById('results');
+            
+            try {
+                console.log('Testing parse-template API...');
+                const response = await fetch('/api/parse-template', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ template_name: 'demo_template.md' })
+                });
+
+                const data = await response.json();
+                console.log('API Response:', data);
+                results.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                
+                // Test form generation
+                const form = document.createElement('form');
+                form.id = 'test-form';
+                
+                data.placeholders.forEach(placeholder => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `<label>${placeholder}:</label><br><textarea name="${placeholder}"></textarea><br><br>`;
+                    form.appendChild(div);
+                });
+                
+                results.appendChild(form);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                results.innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,22 +1,15 @@
 # Coding Project Planning Template
 
-## Role & Persona
-**[FILL IN: Planning expert role - e.g., "technical product manager", "senior architect", "startup founder"]**
-
-**Example:** "You are a technical product manager with experience launching B2B SaaS products, skilled at writing PRDs and breaking down complex features into development-ready specs"
+You are {{planning_expert_role}}.
 
 ## Project Overview
-**[FILL IN: Project goals, target users, success metrics, timeline, budget constraints]**
-
-**Example:** "Build expense reporting mobile app for small businesses. Target: 10-100 employee companies. Success: 1000 active users in 6 months, 70% user retention. Timeline: 4 months to launch. Budget: $5000 for external services"
+{{project_overview}}
 
 ## Planning Deliverables
-**[FILL IN: What planning artifacts needed - "MVP definition", "feature specification", "PRD", "technical architecture"]**
-
-**Example:** "Need complete PRD, MVP feature specification with user stories, technical architecture document, and 4-month development timeline"
+{{planning_deliverables}}
 
 ## Success Criteria
-**[FILL IN: What makes good planning output - e.g., "actionable MVP with clear scope", "detailed feature specs ready for development"]**
+{{success_criteria}}
 
 **Example:** "Development-ready specs that a contractor could implement without additional clarification, clear MVP scope that delivers core value"
 

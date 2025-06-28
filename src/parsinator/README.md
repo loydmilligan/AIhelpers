@@ -51,7 +51,7 @@ Use the templates in `docs/parsinator/brief_templates/` as starting points:
 Parsinator generates:
 - **`tasks.json`** - Master task list with dependencies
 - **`generation_summary.json`** - Detailed analytics and insights
-- Individual task files (when configured)
+- **Individual task files** - Use `generate-task-files` command
 
 ## CLI Commands
 
@@ -197,6 +197,10 @@ mkdir my-project-briefs/
 python -m src.parsinator.main process-briefs my-project-briefs/ \
   --output-dir ./generated-tasks \
   --project-name "My Awesome Project"
+
+# Generate individual task files
+python -m src.parsinator.main generate-task-files ./generated-tasks/tasks.json \
+  --output-dir ./docs/tasks
 
 # Review the results
 python -m src.parsinator.main analyze-tasks ./generated-tasks/tasks.json
