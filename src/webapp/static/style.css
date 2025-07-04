@@ -161,6 +161,124 @@ p {
     color: #2c3e50;
 }
 
+/* Tab Navigation */
+.tab-nav {
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e1e8ed;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    color: #3498db;
+    background-color: #f8f9fa;
+}
+
+.tab-btn.active {
+    color: #3498db;
+    border-bottom-color: #3498db;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Parsinator Styles */
+.parsinator-form {
+    max-width: 100%;
+}
+
+.parsinator-actions {
+    margin: 1.5rem 0;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.parsinator-actions button {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.parsinator-actions button:hover {
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+}
+
+.parsinator-actions button:active {
+    transform: translateY(0);
+}
+
+#parsinator-output {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #2ecc71;
+}
+
+#parsinator-status {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+#parsinator-status.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#parsinator-status.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+#parsinator-status.info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+#parsinator-content {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 6px;
+    border: 1px solid #e1e8ed;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 400px;
+    overflow-y: auto;
+    color: #2c3e50;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {

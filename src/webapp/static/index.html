@@ -8,20 +8,62 @@
 </head>
 <body>
     <div class="container">
-        <h1>AI Prompt Helper</h1>
-        <p>Select a template to get started.</p>
+        <h1>AI Helpers</h1>
+        
+        <!-- Navigation Tabs -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('prompts')">Prompt Generation</button>
+            <button class="tab-btn" onclick="switchTab('parsinator')">Parsinator</button>
+        </div>
 
-        <select id="template-select">
-            <option value="">-- Select a Template --</option>
-        </select>
+        <!-- Prompt Generation Tab -->
+        <div id="prompts-tab" class="tab-content active">
+            <h2>Prompt Generation</h2>
+            <p>Select a template to get started.</p>
 
-        <form id="prompt-form"></form>
+            <select id="template-select">
+                <option value="">-- Select a Template --</option>
+            </select>
 
-        <button id="generate-btn" style="display: none;">Generate Prompt</button>
+            <form id="prompt-form"></form>
 
-        <div id="output-container" style="display: none;">
-            <h2>Generated Prompt</h2>
-            <pre id="output-prompt"></pre>
+            <button id="generate-btn" style="display: none;">Generate Prompt</button>
+
+            <div id="output-container" style="display: none;">
+                <h3>Generated Prompt</h3>
+                <pre id="output-prompt"></pre>
+            </div>
+        </div>
+
+        <!-- Parsinator Tab -->
+        <div id="parsinator-tab" class="tab-content">
+            <h2>Parsinator - Brief to Tasks</h2>
+            <p>Convert project briefs into structured task lists.</p>
+
+            <div class="parsinator-form">
+                <div class="form-field">
+                    <label for="project-name">Project Name:</label>
+                    <input type="text" id="project-name" placeholder="Enter project name..." value="My Project">
+                </div>
+
+                <div class="form-field">
+                    <label for="brief-text">Project Brief:</label>
+                    <textarea id="brief-text" rows="15" placeholder="Paste your project brief here or use the example below..."></textarea>
+                </div>
+
+                <div class="parsinator-actions">
+                    <button id="load-example-btn">Load Example Brief</button>
+                    <button id="validate-brief-btn">Validate Brief</button>
+                    <button id="process-brief-btn">Process Brief</button>
+                    <button id="health-check-btn">Health Check</button>
+                </div>
+
+                <div id="parsinator-output" style="display: none;">
+                    <h3>Results</h3>
+                    <div id="parsinator-status"></div>
+                    <pre id="parsinator-content"></pre>
+                </div>
+            </div>
         </div>
     </div>
 

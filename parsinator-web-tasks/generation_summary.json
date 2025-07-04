@@ -1,0 +1,77 @@
+{
+  "generation_timestamp": "2025-06-27T17:07:25.797764",
+  "id_management": {
+    "total_tasks": 9,
+    "new_tasks": 9,
+    "existing_tasks": 0,
+    "priority_distribution": {
+      "high": 2,
+      "medium": 6,
+      "low": 1
+    },
+    "dependency_distribution": {
+      "no_dependencies": 1,
+      "has_dependencies": 8
+    },
+    "id_range": {
+      "min": 1,
+      "max": 9
+    }
+  },
+  "brief_processing": {
+    "briefs_processed": 3,
+    "brief_types": {
+      "setup": 1,
+      "feature": 0,
+      "deployment": 2
+    },
+    "briefs_by_file": [
+      {
+        "file": "01_parsinator_web_setup_brief.md",
+        "type": "setup",
+        "title": "Project Setup",
+        "tasks_extracted": 2
+      },
+      {
+        "file": "02_parsinator_web_interface_brief.md",
+        "type": "deployment",
+        "title": "Feature",
+        "tasks_extracted": 0
+      },
+      {
+        "file": "03_parsinator_web_deployment_brief.md",
+        "type": "deployment",
+        "title": "Deployment",
+        "tasks_extracted": 7
+      }
+    ]
+  },
+  "dependency_analysis": {
+    "dependencies_suggested": 7,
+    "dependency_statistics": {
+      "total_dependencies_suggested": 7,
+      "dependency_types": {
+        "sequential": 7
+      },
+      "confidence_distribution": {
+        "high": 7,
+        "medium": 0,
+        "low": 0
+      },
+      "tasks_with_dependencies": 7,
+      "dependency_density": 0.7777777777777778,
+      "average_confidence": 0.8
+    },
+    "warnings": [],
+    "confidence_distribution": {
+      "high_confidence": 7,
+      "medium_confidence": 0,
+      "low_confidence": 0
+    }
+  },
+  "collection_stats": {
+    "total_tasks": 9,
+    "unlocked_tasks": 1,
+    "dependency_errors": []
+  }
+}

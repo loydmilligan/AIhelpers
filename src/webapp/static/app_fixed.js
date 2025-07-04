@@ -380,10 +380,184 @@ class PromptGenerator {
     }
 }
 
+// Tab switching functionality
+function switchTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from all tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabName + '-tab').classList.add('active');
+    
+    // Add active class to clicked tab button
+    event.target.classList.add('active');
+}
+
+// Parsinator functionality
+class ParsinatorController {
+    constructor() {
+        this.setupEventListeners();
+    }
+    
+    setupEventListeners() {
+        document.getElementById('health-check-btn').addEventListener('click', () => this.healthCheck());
+        document.getElementById('validate-brief-btn').addEventListener('click', () => this.validateBrief());
+        document.getElementById('process-brief-btn').addEventListener('click', () => this.processBrief());
+        document.getElementById('load-example-btn').addEventListener('click', () => this.loadExample());
+    }
+    
+    async healthCheck() {
+        this.showLoading('Checking Parsinator health...');
+        
+        try {
+            const response = await fetch('/api/parsinator/health');
+            const data = await response.json();
+            
+            if (data.healthy) {
+                this.showResult('success', `✅ Parsinator is healthy! Available templates: ${data.available_templates}`);
+            } else {
+                this.showResult('error', `❌ Health check failed: ${data.error}`);
+            }
+        } catch (error) {
+            this.showResult('error', `❌ Health check error: ${error.message}`);
+        }
+    }
+    
+    async validateBrief() {
+        const briefText = document.getElementById('brief-text').value.trim();
+        if (!briefText) {
+            this.showResult('error', '❌ Please enter a brief to validate');
+            return;
+        }
+        
+        this.showLoading('Validating brief format...');
+        
+        try {
+            const response = await fetch('/api/parsinator/validate-brief', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ brief_text: briefText })
+            });
+            
+            const data = await response.json();
+            
+            if (data.valid) {
+                this.showResult('success', `✅ Brief is valid! Type: ${data.brief_type || 'unknown'}`);
+            } else {
+                const errors = data.errors.join('\\n');
+                this.showResult('error', `❌ Brief validation failed:\\n${errors}`);
+            }
+        } catch (error) {
+            this.showResult('error', `❌ Validation error: ${error.message}`);
+        }
+    }
+    
+    async processBrief() {
+        const briefText = document.getElementById('brief-text').value.trim();
+        const projectName = document.getElementById('project-name').value.trim() || 'Web Project';
+        
+        if (!briefText) {
+            this.showResult('error', '❌ Please enter a brief to process');
+            return;
+        }
+        
+        this.showLoading('Processing brief and generating tasks...');
+        
+        try {
+            const response = await fetch('/api/parsinator/process-brief', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    brief_text: briefText,
+                    project_name: projectName
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                const summary = `✅ Successfully processed brief!
+                
+📊 Results:
+- Tasks generated: ${data.task_count}
+- Project: ${projectName}
+
+${data.task_count > 0 ? '📋 Generated Tasks:' : '⚠️ No tasks were extracted from this brief'}`;
+                
+                this.showResult('success', summary, JSON.stringify(data.tasks, null, 2));
+            } else {
+                this.showResult('error', `❌ Processing failed: ${data.error}`);
+            }
+        } catch (error) {
+            this.showResult('error', `❌ Processing error: ${error.message}`);
+        }
+    }
+    
+    loadExample() {
+        const exampleBrief = `# Feature Brief Template
+
+## Feature Name
+User Authentication System
+
+## Problem Statement
+The application needs secure user authentication to protect user data and provide personalized experiences.
+
+## Core Feature Tasks
+### Must-Have Implementation
+1. **Create User Model**: Design database schema for user accounts with email, password hash, and profile data
+2. **Implement Registration**: Build user registration with email validation and password requirements
+3. **Add Login System**: Create secure login with JWT token generation and session management
+4. **Build Password Reset**: Implement forgot password flow with email-based reset tokens
+5. **Add User Dashboard**: Create protected user profile page with account management features
+
+## Success Criteria
+- Users can register and login securely
+- Passwords are properly hashed and stored
+- JWT tokens expire appropriately
+- Password reset works via email
+- All endpoints properly authenticate requests`;
+
+        document.getElementById('brief-text').value = exampleBrief;
+        this.showResult('info', '📝 Example brief loaded! You can now validate or process it.');
+    }
+    
+    showLoading(message) {
+        const output = document.getElementById('parsinator-output');
+        const status = document.getElementById('parsinator-status');
+        const content = document.getElementById('parsinator-content');
+        
+        status.className = 'info';
+        status.textContent = message;
+        content.textContent = '';
+        output.style.display = 'block';
+    }
+    
+    showResult(type, message, details = '') {
+        const output = document.getElementById('parsinator-output');
+        const status = document.getElementById('parsinator-status');
+        const content = document.getElementById('parsinator-content');
+        
+        status.className = type;
+        status.textContent = message;
+        content.textContent = details;
+        output.style.display = 'block';
+        
+        // Scroll to results
+        output.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
 // Initialize the app when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM content loaded, initializing PromptGenerator...');
+    console.log('DOM content loaded, initializing applications...');
     new PromptGenerator();
+    new ParsinatorController();
 });
 
 console.log('Fixed JavaScript file loaded, waiting for DOM...');
