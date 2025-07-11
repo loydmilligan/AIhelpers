@@ -228,3 +228,167 @@ def get_current_user_context(user: User = Depends(require_auth)) -> dict:
         "is_premium": user.is_premium(),
         "can_create_teams": user.can_create_teams(),
     }
+
+
+def require_usage_quota(action_type: str) -> Callable[[User, Session], User]:
+    """
+    Create a dependency that requires available usage quota for a specific action.
+    
+    Args:
+        action_type: Type of action to check ('prompt', 'brief', 'validation')
+        
+    Returns:
+        Dependency function that checks usage quota
+    """
+    def check_quota(
+        user: User = Depends(require_auth),
+        db: Session = Depends(get_db_session)
+    ) -> User:
+        """
+        Check if user has available quota for the specified action.
+        
+        Args:
+            user: Authenticated user
+            db: Database session
+            
+        Returns:
+            User object if quota is available
+            
+        Raises:
+            HTTPException: If quota is exceeded
+        """
+        from ..services.subscription_service import SubscriptionService
+        
+        service = SubscriptionService(db)
+        can_perform, error_message = service.check_usage_limits(user, action_type)
+        
+        if not can_perform:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail={
+                    "error": "usage_limit_exceeded",
+                    "message": error_message,
+                    "action_type": action_type,
+                    "tier": user.subscription_tier.value
+                }
+            )
+        
+        return user
+    
+    return check_quota
+
+
+def get_usage_tracker(action_type: str) -> Callable[[User, Session], None]:
+    """
+    Create a dependency that tracks usage after successful operations.
+    
+    Args:
+        action_type: Type of action to track
+        
+    Returns:
+        Dependency function that tracks usage
+    """
+    def track_usage(
+        user: User = Depends(require_auth),
+        db: Session = Depends(get_db_session)
+    ) -> None:
+        """
+        Track usage for the specified action type.
+        
+        Args:
+            user: Authenticated user
+            db: Database session
+        """
+        from ..services.subscription_service import SubscriptionService
+        
+        try:
+            service = SubscriptionService(db)
+            
+            # Map action types to activity types
+            activity_type_map = {
+                "prompt": "prompt_generated",
+                "brief": "brief_processed",
+                "validation": "brief_validated"
+            }
+            
+            activity_type = activity_type_map.get(action_type, action_type)
+            service.increment_usage(user.id, activity_type)
+            
+        except Exception as e:
+            # Don't fail the main operation if tracking fails
+            print(f"Warning: Failed to track usage for user {user.id}: {str(e)}")
+    
+    return track_usage
+
+
+def require_subscription_feature(feature: str) -> Callable[[User], User]:
+    """
+    Create a dependency that requires a specific subscription feature.
+    
+    Args:
+        feature: Feature name to check ('team_creation', 'advanced_features')
+        
+    Returns:
+        Dependency function that checks feature availability
+    """
+    def check_feature(user: User = Depends(require_auth)) -> User:
+        """
+        Check if user's subscription tier includes the required feature.
+        
+        Args:
+            user: Authenticated user
+            
+        Returns:
+            User object if feature is available
+            
+        Raises:
+            HTTPException: If feature is not available in user's tier
+        """
+        from ..services.subscription_service import SubscriptionService
+        
+        tier_features = SubscriptionService.USAGE_LIMITS.get(user.subscription_tier, {})
+        
+        if not tier_features.get(feature, False):
+            feature_names = {
+                "team_creation": "team creation",
+                "advanced_features": "advanced features"
+            }
+            
+            feature_name = feature_names.get(feature, feature)
+            
+            if user.subscription_tier == SubscriptionTier.FREE:
+                upgrade_suggestion = "Upgrade to PROFESSIONAL or TEAM tier"
+            elif user.subscription_tier == SubscriptionTier.PROFESSIONAL and feature == "team_creation":
+                upgrade_suggestion = "Upgrade to TEAM tier"
+            else:
+                upgrade_suggestion = "Contact support for feature access"
+            
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={
+                    "error": "feature_not_available",
+                    "message": f"{feature_name.title()} is not available in your current subscription tier",
+                    "feature": feature,
+                    "current_tier": user.subscription_tier.value,
+                    "upgrade_suggestion": upgrade_suggestion
+                }
+            )
+        
+        return user
+    
+    return check_feature
+
+
+# Convenience dependencies for common usage checks
+require_prompt_quota = require_usage_quota("prompt")
+require_brief_quota = require_usage_quota("brief")
+require_validation_quota = require_usage_quota("validation")
+
+# Feature-specific dependencies
+require_team_creation = require_subscription_feature("team_creation")
+require_advanced_features = require_subscription_feature("advanced_features")
+
+# Usage tracking dependencies
+track_prompt_usage = get_usage_tracker("prompt")
+track_brief_usage = get_usage_tracker("brief")
+track_validation_usage = get_usage_tracker("validation")

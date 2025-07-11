@@ -53,6 +53,15 @@ from auth.schemas import (
     RegisterResponse, AuthenticationResponse, ErrorResponse, SuccessResponse,
     EmailVerificationRequest, ResendVerificationRequest
 )
+from auth.subscription_schemas import (
+    SubscriptionStatusResponse, SubscriptionChangeRequest, SubscriptionChangeResponse,
+    UsageStatsResponse, TierLimits, UsageStatistics, RemainingUsage,
+    SubscriptionHealthResponse
+)
+from auth.usage_limits import (
+    check_prompt_limit, check_brief_limit, check_validation_limit,
+    get_usage_stats, track_prompt_usage, track_brief_usage, track_validation_usage
+)
 from auth.utils import (
     generate_password_reset_token, verify_password_reset_token,
     validate_email_address, format_user_display_name, generate_verification_token
@@ -61,6 +70,7 @@ from models.user import User, SubscriptionTier
 from models.prompt import Prompt
 from config.database import get_db_session
 from services.prompt_analytics import PromptAnalyticsService
+from services.subscription_service import SubscriptionService
 from services.email_service import email_service
 
 app = FastAPI(title="AI Prompt Helper API", version="1.0.0")
@@ -528,6 +538,172 @@ async def resend_verification(request: ResendVerificationRequest, db: Session = 
         )
 
 
+# Subscription management endpoints
+@app.get("/auth/subscription/status", response_model=SubscriptionStatusResponse)
+async def get_subscription_status(current_user: User = Depends(require_auth), db: Session = Depends(get_db_session)):
+    """Get current subscription status and usage statistics"""
+    try:
+        service = SubscriptionService(db)
+        status_data = service.get_subscription_status(current_user)
+        
+        # Calculate remaining usage
+        current_usage = status_data["current_usage"]
+        tier_limits = status_data["tier_limits"]
+        
+        remaining_usage = {}
+        for key, current_val in current_usage.items():
+            if key == "prompts_generated":
+                limit = tier_limits.get("monthly_prompts", 0)
+            elif key == "briefs_processed":
+                limit = tier_limits.get("monthly_briefs", 0)
+            elif key == "briefs_validated":
+                limit = tier_limits.get("monthly_validations", 0)
+            else:
+                continue
+                
+            if isinstance(limit, int):
+                remaining_usage[key] = max(0, limit - current_val)
+            else:
+                remaining_usage[key] = "unlimited"
+        
+        # Calculate next reset date
+        from datetime import datetime, timezone
+        current_date = datetime.now(timezone.utc)
+        if current_date.month == 12:
+            next_reset = current_date.replace(year=current_date.year + 1, month=1, day=1)
+        else:
+            next_reset = current_date.replace(month=current_date.month + 1, day=1)
+        next_reset = next_reset.replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        return SubscriptionStatusResponse(
+            user_id=status_data["user_id"],
+            subscription_tier=status_data["subscription_tier"],
+            is_premium=status_data["is_premium"],
+            can_create_teams=status_data["can_create_teams"],
+            tier_limits=TierLimits(**tier_limits),
+            current_usage=UsageStatistics(**current_usage),
+            remaining_usage=RemainingUsage(**remaining_usage),
+            month_start=status_data["month_start"],
+            subscription_active=status_data["subscription_active"],
+            next_reset_date=next_reset.isoformat()
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting subscription status: {str(e)}"
+        )
+
+
+@app.post("/auth/subscription/change", response_model=SubscriptionChangeResponse)
+async def change_subscription_tier(
+    request: SubscriptionChangeRequest,
+    current_user: User = Depends(require_auth),
+    db: Session = Depends(get_db_session)
+):
+    """Change user's subscription tier"""
+    try:
+        service = SubscriptionService(db)
+        result = service.change_subscription_tier(current_user, request.new_tier)
+        
+        return SubscriptionChangeResponse(**result)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error changing subscription: {str(e)}"
+        )
+
+
+@app.get("/auth/subscription/usage", response_model=UsageStatsResponse)
+async def get_detailed_usage_stats(current_user: User = Depends(require_auth), db: Session = Depends(get_db_session)):
+    """Get detailed usage statistics for current month"""
+    try:
+        service = SubscriptionService(db)
+        from datetime import datetime, timezone
+        
+        current_date = datetime.now(timezone.utc)
+        month_start = current_date.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        usage_stats = service.get_usage_statistics(current_user.id, month_start, current_date)
+        tier_limits = service.USAGE_LIMITS.get(current_user.subscription_tier, {})
+        
+        # Calculate remaining usage
+        remaining_usage = {}
+        usage_percentage = {}
+        
+        for key, current_val in usage_stats.items():
+            if key == "prompts_generated":
+                limit = tier_limits.get("monthly_prompts", 0)
+            elif key == "briefs_processed":
+                limit = tier_limits.get("monthly_briefs", 0)
+            elif key == "briefs_validated":
+                limit = tier_limits.get("monthly_validations", 0)
+            else:
+                continue
+                
+            if isinstance(limit, int):
+                remaining_usage[key] = max(0, limit - current_val)
+                usage_percentage[key] = (current_val / limit * 100) if limit > 0 else 0
+            else:
+                remaining_usage[key] = "unlimited"
+                usage_percentage[key] = "unlimited"
+        
+        return UsageStatsResponse(
+            user_id=current_user.id,
+            subscription_tier=current_user.subscription_tier.value,
+            month_start=month_start.isoformat(),
+            current_usage=UsageStatistics(**usage_stats),
+            tier_limits=TierLimits(**tier_limits),
+            remaining_usage=RemainingUsage(**remaining_usage),
+            usage_percentage=usage_percentage
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting usage statistics: {str(e)}"
+        )
+
+
+@app.get("/auth/subscription/health", response_model=SubscriptionHealthResponse)
+async def subscription_health_check(db: Session = Depends(get_db_session)):
+    """Check subscription system health"""
+    try:
+        # Test basic subscription service functionality
+        service = SubscriptionService(db)
+        
+        # Test database connectivity
+        db.execute("SELECT 1")
+        
+        # Check if we can query usage metrics
+        from models.analytics import UsageMetrics
+        db.query(UsageMetrics).limit(1).all()
+        
+        return SubscriptionHealthResponse(
+            healthy=True,
+            message="Subscription system is operational",
+            services_status={
+                "usage_tracking": True,
+                "limit_enforcement": True,
+                "tier_management": True
+            }
+        )
+        
+    except Exception as e:
+        return SubscriptionHealthResponse(
+            healthy=False,
+            message=f"Subscription system error: {str(e)}",
+            services_status={
+                "usage_tracking": False,
+                "limit_enforcement": False,
+                "tier_management": False
+            }
+        )
+
+
 @app.get("/api/templates", response_model=TemplateResponse)
 async def get_templates():
     """Get list of available prompt templates"""
@@ -568,7 +744,7 @@ async def parse_template_endpoint(request: ParseTemplateRequest):
         raise HTTPException(status_code=500, detail=f"Error parsing template: {str(e)}")
 
 @app.post("/api/generate", response_model=GeneratePromptResponse)
-async def generate_prompt(request: GeneratePromptRequest, current_user: User = Depends(require_auth), db: Session = Depends(get_db_session)):
+async def generate_prompt(request: GeneratePromptRequest, current_user: User = Depends(check_prompt_limit), db: Session = Depends(get_db_session)):
     """Generate the final prompt using AI"""
     import time
     start_time = time.time()
@@ -634,6 +810,23 @@ async def generate_prompt(request: GeneratePromptRequest, current_user: User = D
                 error=final_prompt
             )
         
+        # Track successful usage
+        try:
+            subscription_service = SubscriptionService(db)
+            subscription_service.increment_usage(
+                user_id=current_user.id,
+                activity_type="prompt_generated",
+                context_data={
+                    "template_name": request.template_name,
+                    "user_data_keys": list(request.user_data.keys()),
+                    "response_time": response_time,
+                    "success": True
+                }
+            )
+        except Exception as tracking_error:
+            # Don't fail the main request if tracking fails
+            print(f"Usage tracking failed: {tracking_error}")
+        
         return GeneratePromptResponse(
             generated_prompt=final_prompt,
             success=True
@@ -669,11 +862,28 @@ async def parsinator_health_check():
         )
 
 @app.post("/api/parsinator/process-brief", response_model=ProcessBriefResponse)
-async def process_brief(request: ProcessBriefRequest, current_user: User = Depends(require_auth)):
+async def process_brief(request: ProcessBriefRequest, current_user: User = Depends(check_brief_limit), db: Session = Depends(get_db_session)):
     """Process a project brief and generate tasks"""
     try:
         service = get_parsinator_service()
         result = service.process_brief_text(request.brief_text, request.project_name)
+        
+        # Track successful usage
+        if result.success:
+            try:
+                subscription_service = SubscriptionService(db)
+                subscription_service.increment_usage(
+                    user_id=current_user.id,
+                    activity_type="brief_processed",
+                    context_data={
+                        "project_name": request.project_name,
+                        "task_count": result.task_count,
+                        "success": True
+                    }
+                )
+            except Exception as tracking_error:
+                # Don't fail the main request if tracking fails
+                print(f"Usage tracking failed: {tracking_error}")
         
         return ProcessBriefResponse(
             success=result.success,
@@ -689,11 +899,29 @@ async def process_brief(request: ProcessBriefRequest, current_user: User = Depen
         )
 
 @app.post("/api/parsinator/validate-brief", response_model=ValidateBriefResponse)
-async def validate_brief(request: ValidateBriefRequest, current_user: User = Depends(require_auth)):
+async def validate_brief(request: ValidateBriefRequest, current_user: User = Depends(check_validation_limit), db: Session = Depends(get_db_session)):
     """Validate a project brief format"""
     try:
         service = get_parsinator_service()
         result = service.validate_brief_text(request.brief_text)
+        
+        # Track successful usage
+        if result.valid:
+            try:
+                subscription_service = SubscriptionService(db)
+                subscription_service.increment_usage(
+                    user_id=current_user.id,
+                    activity_type="brief_validated",
+                    context_data={
+                        "brief_type": result.brief_type,
+                        "valid": result.valid,
+                        "error_count": len(result.errors or []),
+                        "warning_count": len(result.warnings or [])
+                    }
+                )
+            except Exception as tracking_error:
+                # Don't fail the main request if tracking fails
+                print(f"Usage tracking failed: {tracking_error}")
         
         return ValidateBriefResponse(
             valid=result.valid,
