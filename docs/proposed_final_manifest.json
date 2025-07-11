@@ -1,7 +1,7 @@
 {
-  "version": "1.0",
-  "generated": "2025-01-11T21:00:00Z",
-  "status": "target_architecture",
+  "version": "1.1",
+  "generated": "2025-01-11T13:20:00Z",
+  "status": "target_architecture_updated",
   "project": {
     "name": "AI Coding Workflow Management Platform",
     "description": "Comprehensive AI coding workflow management platform that preserves context across AI sessions, intelligently manages prompts, and integrates seamlessly with Claude Code and Cursor",
@@ -31,16 +31,17 @@
   "files": {
     "backend": {
       "src/main.py": "Application entry point and CLI orchestration",
-      "src/webapp/main.py": "FastAPI web application with full feature set",
-      "src/webapp/auth.py": "Authentication and authorization system",
-      "src/webapp/websocket.py": "WebSocket handlers for real-time features",
-      "src/models/": "SQLAlchemy models (User, Prompt, SessionContext, Team, Analytics)",
-      "src/services/": "Business logic services (prompt, context, analytics, collaboration)",
-      "src/api/": "API route handlers organized by feature",
+      "src/webapp/main.py": "FastAPI web application with full feature set and context integration",
+      "src/auth/": "Comprehensive authentication and authorization system (middleware, OAuth2, JWT)",
+      "src/config/": "Configuration management with database connection and environment handling",
+      "src/models/": "SQLAlchemy models (User, Prompt, SessionContext, Team, Analytics) with relationships",
+      "src/services/": "Business logic services (prompt, context, analytics, search, versioning)",
+      "src/api/": "API route handlers organized by feature (context, prompts, analytics)",
+      "src/schemas/": "Pydantic schemas for request/response validation and API documentation",
+      "src/utils/": "Utility functions including context compression and optimization",
+      "src/scripts/": "Migration and maintenance scripts for data transformation",
       "src/integrations/": "External service integrations (Claude Code, Cursor, AI providers)",
-      "src/utils/": "Utility functions and helpers",
-      "src/config/": "Configuration management and environment handling",
-      "src/migrations/": "Database migration scripts using Alembic"
+      "alembic/": "Database migration scripts using Alembic with versioning"
     },
     "parsinator": {
       "src/parsinator/": "Complete task generation system (existing, enhanced)",
@@ -48,10 +49,11 @@
       "src/parsinator/collaboration.py": "Team-based brief processing"
     },
     "frontend": {
-      "src/webapp/static/": "HTMX-powered frontend with PWA capabilities",
-      "src/webapp/static/components/": "Reusable UI components",
-      "src/webapp/static/pages/": "Page-specific JavaScript and CSS",
-      "src/webapp/static/workers/": "Service workers for offline functionality"
+      "src/webapp/static/": "HTMX-powered frontend with context management and PWA capabilities",
+      "src/webapp/static/context-manager.js": "Advanced context management with compression and tool formatting",
+      "src/webapp/static/components/": "Reusable UI components and modals",
+      "src/webapp/static/pages/": "Page-specific JavaScript and CSS with responsive design",
+      "src/webapp/static/workers/": "Service workers for offline functionality and caching"
     },
     "infrastructure": {
       "docker/": "Container configurations for development and production",
@@ -80,7 +82,9 @@
       "python-multipart>=0.0.6",
       "python-jose[cryptography]>=3.3.0",
       "passlib[bcrypt]>=1.7.4",
-      "python-dotenv>=1.0.0"
+      "python-dotenv>=1.0.0",
+      "orjson>=3.9.0",
+      "diff-match-patch>=20230430"
     ],
     "ai_integration": [
       "google-generativeai>=0.5.4",
@@ -114,16 +118,16 @@
     "data_flow": "User input → Template processing → AI generation → Context storage → Session restoration → Collaborative sharing",
     "configuration": "Environment-based configuration with secure secrets management and feature flags",
     "key_components": [
-      "Intelligent Prompt Library with semantic search",
-      "Session Context Preservation Engine",
-      "Claude Code + Cursor Integration",
-      "Simple Team Collaboration",
-      "Template-Driven Prompt Creation",
-      "Basic Analytics Dashboard",
-      "Enhanced Parsinator with AI integration",
-      "Progressive Web App frontend",
-      "Real-time WebSocket communication",
-      "Comprehensive API with rate limiting"
+      "Intelligent Prompt Library with semantic search and versioning",
+      "Advanced Session Context Preservation Engine with compression",
+      "Tool-Specific Format Optimization (Claude Code, Cursor, ChatGPT)",
+      "Context Compression and Storage Optimization (60%+ reduction)",
+      "Template-Driven Prompt Creation with database integration",
+      "Real-time Context Management with HTMX integration",
+      "Enhanced Parsinator with AI integration and dependency analysis",
+      "Service-Oriented Architecture with clear separation of concerns",
+      "Progressive Web App frontend with offline capabilities",
+      "Comprehensive API with authentication and validation"
     ],
     "integration_points": [
       "Claude Code API for session context",
@@ -159,22 +163,22 @@
   },
   "data_models": {
     "user_management": {
-      "User": "id, email, name, subscription_tier, created_at, updated_at",
-      "Team": "id, name, owner_id, subscription_tier, created_at",
-      "TeamMember": "user_id, team_id, role, joined_at"
+      "User": "id, email, name, hashed_password, subscription_tier, is_active, created_at, updated_at",
+      "Team": "id, name, owner_id, subscription_tier, created_at, updated_at",
+      "TeamMember": "user_id, team_id, role, permissions, joined_at"
     },
     "prompt_system": {
-      "Prompt": "id, title, content, category, tags, owner_id, team_id, version, created_at",
-      "PromptVersion": "id, prompt_id, content, version_number, created_at",
-      "PromptUsage": "id, prompt_id, user_id, used_at, context_data"
+      "Prompt": "id, title, content, description, category, tags, owner_id, team_id, is_public, version, created_at, updated_at",
+      "PromptVersion": "id, prompt_id, content, version_number, change_description, created_at",
+      "PromptUsage": "id, prompt_id, user_id, used_at, context_data, response_time, success"
     },
     "context_preservation": {
-      "SessionContext": "id, user_id, ai_tool, context_data, metadata, created_at",
-      "ContextSnapshot": "id, session_id, snapshot_data, created_at"
+      "SessionContext": "id, user_id, title, ai_tool, context_data, compressed_data, compression_ratio, metadata, size_bytes, created_at, updated_at",
+      "ContextSnapshot": "id, session_id, snapshot_data, snapshot_metadata, created_at"
     },
     "analytics": {
-      "UserActivity": "id, user_id, activity_type, data, timestamp",
-      "PromptAnalytics": "id, prompt_id, usage_count, effectiveness_score, updated_at"
+      "UserActivity": "id, user_id, activity_type, data, timestamp, session_id",
+      "PromptAnalytics": "id, prompt_id, usage_count, effectiveness_score, avg_response_time, success_rate, updated_at"
     }
   },
   "security": {
