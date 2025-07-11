@@ -418,9 +418,9 @@ Commit completed task implementation with proper git history.
 Format: `[TASK_ID]: [Brief description]`
 
 Examples:
-- `Task-1.1: Initialize project structure and settings system`
-- `Task-2.1: Implement MQTT client with connection management`
-- `Task-3.2: Add auto-publishing on note save`
+- `Task-1.1: Initialize project structure and configuration system`
+- `Task-2.1: Implement database service with connection management`
+- `Task-3.2: Add content classification with AI processing`
 
 ### 4. Include Detailed Commit Body
 ```

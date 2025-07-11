@@ -1,0 +1,622 @@
+{
+  "manifest_version": "1.0.0",
+  "generated_at": "2025-01-11T21:00:00Z",
+  "project_name": "AIhelpers",
+  "project_description": "AI coding workflow management platform with prompt generation and project brief parsing capabilities",
+  "repository_url": "https://github.com/mmariani/AIhelpers",
+  "total_source_files": 19,
+  "programming_languages": ["Python", "JavaScript", "HTML", "CSS"],
+  "frameworks": ["FastAPI", "HTMX", "Click"],
+  "files": [
+    {
+      "path": "src/main.py",
+      "type": "script",
+      "language": "python",
+      "purpose": "Entry point for the AI prompt generation CLI application",
+      "description": "Main CLI script that handles command-line argument parsing and orchestrates the prompt generation workflow using templates and AI assistance",
+      "exports": [],
+      "imports": [
+        "os",
+        "sys",
+        "argparse",
+        "pathlib.Path",
+        "prompt_generator",
+        "utils"
+      ],
+      "key_functions": [
+        "main",
+        "parse_arguments"
+      ],
+      "dependencies": [
+        "prompt_generator.py",
+        "utils.py"
+      ],
+      "size_bytes": 3245,
+      "side_effects": [
+        "Command-line argument parsing",
+        "File system operations",
+        "Template processing",
+        "AI API calls"
+      ]
+    },
+    {
+      "path": "src/prompt_generator.py",
+      "type": "module",
+      "language": "python",
+      "purpose": "Core prompt generation logic with template parsing and AI assembly",
+      "description": "Contains the main logic for parsing prompt templates, extracting placeholders, and using Gemini AI to assemble final prompts based on user data",
+      "exports": [
+        "parse_template",
+        "assemble_prompt"
+      ],
+      "imports": [
+        "re",
+        "pathlib.Path",
+        "google.generativeai",
+        "os",
+        "utils"
+      ],
+      "key_functions": [
+        "parse_template",
+        "assemble_prompt",
+        "configure_gemini"
+      ],
+      "dependencies": [
+        "utils.py"
+      ],
+      "size_bytes": 4821,
+      "side_effects": [
+        "Gemini AI API calls",
+        "File system reads",
+        "Environment variable access"
+      ]
+    },
+    {
+      "path": "src/utils.py",
+      "type": "module",
+      "language": "python",
+      "purpose": "Utility functions for file operations and JSON handling",
+      "description": "Provides utility functions for saving data as JSON files and other common operations across the application",
+      "exports": [
+        "save_as_json"
+      ],
+      "imports": [
+        "json",
+        "pathlib.Path"
+      ],
+      "key_functions": [
+        "save_as_json"
+      ],
+      "dependencies": [],
+      "size_bytes": 892,
+      "side_effects": [
+        "File system writes",
+        "JSON serialization"
+      ]
+    },
+    {
+      "path": "src/webapp/main.py",
+      "type": "application",
+      "language": "python",
+      "purpose": "FastAPI web application providing REST API for prompt generation and Parsinator services",
+      "description": "Web server that exposes the prompt generation functionality through REST API endpoints and serves the HTMX frontend",
+      "exports": [
+        "app"
+      ],
+      "imports": [
+        "fastapi",
+        "pydantic",
+        "pathlib.Path",
+        "dotenv",
+        "prompt_generator",
+        "utils",
+        "parsinator_service"
+      ],
+      "key_functions": [
+        "get_templates",
+        "parse_template_endpoint",
+        "generate_prompt",
+        "process_brief",
+        "validate_brief",
+        "parsinator_health_check"
+      ],
+      "dependencies": [
+        "prompt_generator.py",
+        "utils.py",
+        "parsinator_service.py"
+      ],
+      "size_bytes": 7833,
+      "side_effects": [
+        "HTTP server startup",
+        "CORS configuration",
+        "Static file serving",
+        "AI API calls"
+      ]
+    },
+    {
+      "path": "src/webapp/parsinator_service.py",
+      "type": "service",
+      "language": "python",
+      "purpose": "Service layer for Parsinator functionality in the web application",
+      "description": "Provides a service interface for processing project briefs and generating tasks through the Parsinator system",
+      "exports": [
+        "get_parsinator_service"
+      ],
+      "imports": [
+        "parsinator.enhanced_generator",
+        "parsinator.templates",
+        "parsinator.utils"
+      ],
+      "key_functions": [
+        "ParsinatorService.process_brief_text",
+        "ParsinatorService.validate_brief_text",
+        "ParsinatorService.health_check",
+        "get_parsinator_service"
+      ],
+      "dependencies": [
+        "parsinator/enhanced_generator.py",
+        "parsinator/templates.py",
+        "parsinator/utils.py"
+      ],
+      "size_bytes": 3200,
+      "side_effects": [
+        "Temporary file creation",
+        "Brief parsing",
+        "Task generation"
+      ]
+    },
+    {
+      "path": "src/parsinator/__init__.py",
+      "type": "package",
+      "language": "python",
+      "purpose": "Package initialization for Parsinator task generation system",
+      "description": "Defines the Parsinator package version and serves as the entry point for the task generation functionality",
+      "exports": [
+        "__version__"
+      ],
+      "imports": [],
+      "key_functions": [],
+      "dependencies": [],
+      "size_bytes": 98,
+      "side_effects": []
+    },
+    {
+      "path": "src/parsinator/main.py",
+      "type": "cli",
+      "language": "python",
+      "purpose": "CLI entry point for Parsinator with comprehensive task generation commands",
+      "description": "Command-line interface for the Parsinator system with commands for processing briefs, validating content, and generating task files",
+      "exports": [
+        "cli"
+      ],
+      "imports": [
+        "click",
+        "pathlib.Path",
+        "json",
+        "parsinator.enhanced_generator",
+        "parsinator.parser",
+        "parsinator.templates",
+        "parsinator.utils"
+      ],
+      "key_functions": [
+        "cli",
+        "process_brief",
+        "process_briefs",
+        "validate_brief",
+        "analyze_brief",
+        "analyze_dependencies",
+        "generate_task_files"
+      ],
+      "dependencies": [
+        "parsinator/enhanced_generator.py",
+        "parsinator/parser.py",
+        "parsinator/templates.py",
+        "parsinator/utils.py"
+      ],
+      "size_bytes": 19721,
+      "side_effects": [
+        "Command-line interface",
+        "File system operations",
+        "Brief processing",
+        "Task generation",
+        "JSON file creation"
+      ]
+    },
+    {
+      "path": "src/parsinator/models.py",
+      "type": "model",
+      "language": "python",
+      "purpose": "Data models and structures for Parsinator task generation system",
+      "description": "Defines core data structures including Task, BriefContent, TaskCollection, and ProjectMetadata with validation and serialization capabilities",
+      "exports": [
+        "Task",
+        "BriefContent",
+        "TaskCollection",
+        "ProjectMetadata",
+        "TaskGenerator",
+        "TaskStatus",
+        "TaskPriority"
+      ],
+      "imports": [
+        "dataclasses",
+        "typing",
+        "datetime",
+        "enum",
+        "json",
+        "pathlib.Path"
+      ],
+      "key_functions": [
+        "Task.to_dict",
+        "Task.from_dict",
+        "TaskCollection.add_task",
+        "TaskCollection.validate_dependencies",
+        "TaskGenerator.generate_from_briefs"
+      ],
+      "dependencies": [],
+      "size_bytes": 10140,
+      "side_effects": [
+        "Data validation",
+        "Dependency graph validation",
+        "JSON serialization"
+      ]
+    },
+    {
+      "path": "src/parsinator/parser.py",
+      "type": "parser",
+      "language": "python",
+      "purpose": "Brief parser engine for extracting structured data from project briefs",
+      "description": "Parses setup, feature, and deployment briefs into structured data with task extraction and metadata collection",
+      "exports": [
+        "BriefParser",
+        "ParsedTask",
+        "ParsingError"
+      ],
+      "imports": [
+        "re",
+        "pathlib.Path",
+        "typing",
+        "dataclasses",
+        "parsinator.models",
+        "parsinator.utils"
+      ],
+      "key_functions": [
+        "BriefParser.parse_brief_file",
+        "BriefParser._detect_brief_type",
+        "BriefParser._extract_title",
+        "BriefParser._parse_tasks_by_type"
+      ],
+      "dependencies": [
+        "parsinator/models.py",
+        "parsinator/utils.py"
+      ],
+      "size_bytes": 11834,
+      "side_effects": [
+        "File parsing",
+        "Regex pattern matching",
+        "Data extraction"
+      ]
+    },
+    {
+      "path": "src/parsinator/enhanced_generator.py",
+      "type": "generator",
+      "language": "python",
+      "purpose": "Enhanced task generator integrating ID management and brief parsing",
+      "description": "Complete task generation system that combines brief parsing, ID management, and dependency mapping into a cohesive workflow",
+      "exports": [
+        "EnhancedTaskGenerator",
+        "TaskGenerationError"
+      ],
+      "imports": [
+        "typing",
+        "pathlib.Path",
+        "logging",
+        "datetime",
+        "parsinator.models",
+        "parsinator.parser",
+        "parsinator.id_manager",
+        "parsinator.dependency_mapper",
+        "parsinator.utils"
+      ],
+      "key_functions": [
+        "EnhancedTaskGenerator.process_brief_files",
+        "EnhancedTaskGenerator.generate_tasks_json",
+        "EnhancedTaskGenerator.get_generation_summary"
+      ],
+      "dependencies": [
+        "parsinator/models.py",
+        "parsinator/parser.py",
+        "parsinator/id_manager.py",
+        "parsinator/dependency_mapper.py",
+        "parsinator/utils.py"
+      ],
+      "size_bytes": 7654,
+      "side_effects": [
+        "Brief processing",
+        "Task ID assignment",
+        "Dependency analysis",
+        "JSON generation"
+      ]
+    },
+    {
+      "path": "src/parsinator/id_manager.py",
+      "type": "manager",
+      "language": "python",
+      "purpose": "Task ID management system for maintaining consistent task numbering",
+      "description": "Manages task ID assignment and ensures consistency across additive task generation sessions",
+      "exports": [
+        "TaskIDManager"
+      ],
+      "imports": [
+        "typing",
+        "pathlib.Path",
+        "logging",
+        "parsinator.models",
+        "parsinator.utils"
+      ],
+      "key_functions": [
+        "TaskIDManager.assign_task_ids",
+        "TaskIDManager.get_generation_summary",
+        "TaskIDManager._load_existing_tasks"
+      ],
+      "dependencies": [
+        "parsinator/models.py",
+        "parsinator/utils.py"
+      ],
+      "size_bytes": 6234,
+      "side_effects": [
+        "Task ID assignment",
+        "Existing task loading",
+        "Generation statistics"
+      ]
+    },
+    {
+      "path": "src/parsinator/dependency_mapper.py",
+      "type": "mapper",
+      "language": "python",
+      "purpose": "Advanced dependency analysis and mapping for task relationships",
+      "description": "Analyzes task relationships and suggests dependencies based on content analysis and patterns",
+      "exports": [
+        "DependencyMapper",
+        "DependencyAnalysis",
+        "SuggestedDependency"
+      ],
+      "imports": [
+        "typing",
+        "dataclasses",
+        "re",
+        "logging",
+        "parsinator.models"
+      ],
+      "key_functions": [
+        "DependencyMapper.analyze_dependencies",
+        "DependencyMapper.apply_dependencies",
+        "DependencyMapper._calculate_task_similarity"
+      ],
+      "dependencies": [
+        "parsinator/models.py"
+      ],
+      "size_bytes": 8921,
+      "side_effects": [
+        "Dependency analysis",
+        "Pattern matching",
+        "Confidence scoring"
+      ]
+    },
+    {
+      "path": "src/parsinator/utils.py",
+      "type": "utility",
+      "language": "python",
+      "purpose": "File I/O utilities for Parsinator system",
+      "description": "Handles all file reading/writing operations with security validation and error handling",
+      "exports": [
+        "FileHandler",
+        "FileIOError"
+      ],
+      "imports": [
+        "json",
+        "os",
+        "pathlib.Path",
+        "typing",
+        "logging"
+      ],
+      "key_functions": [
+        "FileHandler.read_brief_file",
+        "FileHandler.write_tasks_json",
+        "FileHandler.find_brief_files",
+        "FileHandler._validate_path"
+      ],
+      "dependencies": [],
+      "size_bytes": 6153,
+      "side_effects": [
+        "File system operations",
+        "Path validation",
+        "JSON serialization"
+      ]
+    },
+    {
+      "path": "src/parsinator/templates.py",
+      "type": "template",
+      "language": "python",
+      "purpose": "Brief template management and validation system",
+      "description": "Manages brief templates and provides validation against template requirements",
+      "exports": [
+        "TemplateManager",
+        "BriefTemplate",
+        "TemplateSection"
+      ],
+      "imports": [
+        "re",
+        "pathlib.Path",
+        "typing",
+        "dataclasses",
+        "parsinator.utils"
+      ],
+      "key_functions": [
+        "TemplateManager.validate_brief",
+        "TemplateManager.detect_brief_type",
+        "TemplateManager.get_validation_report"
+      ],
+      "dependencies": [
+        "parsinator/utils.py"
+      ],
+      "size_bytes": 7456,
+      "side_effects": [
+        "Template validation",
+        "Pattern matching",
+        "Report generation"
+      ]
+    },
+    {
+      "path": "src/parsinator/test_parser.py",
+      "type": "test",
+      "language": "python",
+      "purpose": "Test script for the Brief Parser Engine",
+      "description": "Test suite for validating the brief parsing functionality with sample content and file processing",
+      "exports": [
+        "test_parser_with_brief_files",
+        "test_parser_with_sample_content"
+      ],
+      "imports": [
+        "sys",
+        "pathlib.Path",
+        "parsinator.parser",
+        "parsinator.models"
+      ],
+      "key_functions": [
+        "test_parser_with_brief_files",
+        "test_parser_with_sample_content"
+      ],
+      "dependencies": [
+        "parsinator/parser.py",
+        "parsinator/models.py"
+      ],
+      "size_bytes": 4102,
+      "side_effects": [
+        "File system operations",
+        "Test execution",
+        "Temporary file creation"
+      ]
+    },
+    {
+      "path": "src/webapp/static/index.html",
+      "type": "frontend",
+      "language": "html",
+      "purpose": "Main web interface for the AI Prompt Helper application",
+      "description": "HTMX-powered single-page application providing the user interface for prompt generation and Parsinator functionality",
+      "exports": [],
+      "imports": [],
+      "key_functions": [],
+      "dependencies": [
+        "src/webapp/static/app.js",
+        "src/webapp/static/style.css"
+      ],
+      "size_bytes": 8500,
+      "side_effects": [
+        "DOM manipulation",
+        "HTMX requests",
+        "User interface rendering"
+      ]
+    },
+    {
+      "path": "src/webapp/static/app.js",
+      "type": "frontend",
+      "language": "javascript",
+      "purpose": "Client-side JavaScript for enhanced user interactions",
+      "description": "Provides dynamic functionality for the web interface including form handling and UI enhancements",
+      "exports": [],
+      "imports": [],
+      "key_functions": [
+        "initializeApp",
+        "handleFormSubmission",
+        "updateUI"
+      ],
+      "dependencies": [],
+      "size_bytes": 3200,
+      "side_effects": [
+        "DOM manipulation",
+        "Event handling",
+        "UI state management"
+      ]
+    },
+    {
+      "path": "src/webapp/static/style.css",
+      "type": "stylesheet",
+      "language": "css",
+      "purpose": "Styling for the web interface",
+      "description": "CSS styles for the AI Prompt Helper web application with responsive design",
+      "exports": [],
+      "imports": [],
+      "key_functions": [],
+      "dependencies": [],
+      "size_bytes": 2800,
+      "side_effects": [
+        "Visual styling",
+        "Layout management",
+        "Responsive design"
+      ]
+    },
+    {
+      "path": "requirements.txt",
+      "type": "config",
+      "language": "text",
+      "purpose": "Python package dependencies specification",
+      "description": "Lists all required Python packages and their versions for the project",
+      "exports": [],
+      "imports": [],
+      "key_functions": [],
+      "dependencies": [],
+      "size_bytes": 125,
+      "side_effects": [
+        "Package installation guidance"
+      ]
+    }
+  ],
+  "architectural_overview": {
+    "system_type": "Full-stack web application with CLI tools",
+    "primary_components": [
+      "FastAPI web server",
+      "HTMX frontend",
+      "Parsinator CLI system",
+      "AI prompt generation",
+      "Project brief processing"
+    ],
+    "data_flow": "User input → Template processing → AI generation → Task creation → JSON output",
+    "key_integrations": [
+      "Google Gemini AI for prompt generation",
+      "Click for CLI interfaces",
+      "FastAPI for web API",
+      "HTMX for frontend interactivity"
+    ]
+  },
+  "development_status": {
+    "phase": "MVP Implementation",
+    "completion_percentage": 75,
+    "next_priorities": [
+      "User authentication system",
+      "Enhanced prompt library",
+      "Context preservation",
+      "Team collaboration features"
+    ]
+  },
+  "testing_strategy": {
+    "unit_tests": "Limited - parsinator/test_parser.py",
+    "integration_tests": "None identified",
+    "manual_testing": "Web interface and CLI commands"
+  },
+  "deployment_considerations": {
+    "environment_requirements": [
+      "Python 3.8+",
+      "Google Gemini API key",
+      "FastAPI server environment"
+    ],
+    "configuration_files": [
+      ".env",
+      "requirements.txt"
+    ],
+    "static_assets": [
+      "Web interface files",
+      "CSS stylesheets",
+      "JavaScript modules"
+    ]
+  }
+}

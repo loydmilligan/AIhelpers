@@ -1,6 +1,7 @@
 ## Prompt: Initialize a New Software Project
 
-**Objective:** Set up a new project repository with a clean, standard structure. This prompt is designed to be adaptable for various project types.
+**Objective:** Set up a new project repository with a clean, standard structure. 
+
 
 **Instructions for the AI Assistant:**
 
