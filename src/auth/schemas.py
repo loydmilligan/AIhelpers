@@ -77,6 +77,7 @@ class UserResponse(BaseModel):
     name: str
     subscription_tier: SubscriptionTier
     is_active: bool
+    is_email_verified: bool
     created_at: datetime
     updated_at: datetime
     
@@ -92,6 +93,7 @@ class UserProfileResponse(BaseModel):
     name: str
     subscription_tier: SubscriptionTier
     is_active: bool
+    is_email_verified: bool
     is_premium: bool
     can_create_teams: bool
     created_at: datetime
@@ -223,4 +225,17 @@ class RegisterResponse(BaseModel):
     success: bool
     message: str
     user: UserResponse
-    tokens: TokenResponse
+    tokens: Optional[TokenResponse] = None
+    verification_required: bool = False
+
+
+class EmailVerificationRequest(BaseModel):
+    """Schema for email verification request."""
+    
+    token: str
+
+
+class ResendVerificationRequest(BaseModel):
+    """Schema for resend verification request."""
+    
+    email: EmailStr

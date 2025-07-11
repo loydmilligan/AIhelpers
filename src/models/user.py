@@ -7,7 +7,7 @@ Handles user accounts, authentication, and subscription tiers.
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
-from sqlalchemy import Column, String, Boolean, Enum as SQLEnum, Index
+from sqlalchemy import Column, String, Boolean, Enum as SQLEnum, Index, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
@@ -30,6 +30,9 @@ class User(BaseModel):
         hashed_password: Hashed password for authentication
         subscription_tier: User's subscription level
         is_active: Whether the user account is active
+        is_email_verified: Whether the user's email has been verified
+        email_verification_token: Token for email verification
+        email_verified_at: Timestamp when email was verified
         prompts: Relationship to user's prompts
         owned_teams: Relationship to teams owned by user
         team_memberships: Relationship to team memberships
@@ -49,6 +52,9 @@ class User(BaseModel):
         nullable=False
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_email_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    email_verification_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    email_verified_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     
     # Relationships
     prompts: Mapped[List["Prompt"]] = relationship(
@@ -82,6 +88,8 @@ class User(BaseModel):
     __table_args__ = (
         Index("ix_users_subscription_tier_created_at", "subscription_tier", "created_at"),
         Index("ix_users_is_active_created_at", "is_active", "created_at"),
+        Index("ix_users_email_verified", "is_email_verified"),
+        Index("ix_users_verification_token", "email_verification_token"),
     )
     
     def __repr__(self) -> str:

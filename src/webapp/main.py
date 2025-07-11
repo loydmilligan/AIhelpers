@@ -9,6 +9,7 @@ from sqlalchemy.exc import IntegrityError
 import os
 import sys
 from pathlib import Path
+from datetime import datetime
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -49,16 +50,18 @@ from auth.schemas import (
     UserRegistrationRequest, UserLoginRequest, TokenResponse, 
     UserProfileResponse, UserProfileUpdateRequest, PasswordChangeRequest,
     PasswordResetRequest, PasswordResetConfirmRequest, LoginResponse, 
-    RegisterResponse, AuthenticationResponse, ErrorResponse, SuccessResponse
+    RegisterResponse, AuthenticationResponse, ErrorResponse, SuccessResponse,
+    EmailVerificationRequest, ResendVerificationRequest
 )
 from auth.utils import (
     generate_password_reset_token, verify_password_reset_token,
-    validate_email_address, format_user_display_name
+    validate_email_address, format_user_display_name, generate_verification_token
 )
 from models.user import User, SubscriptionTier
 from models.prompt import Prompt
 from config.database import get_db_session
 from services.prompt_analytics import PromptAnalyticsService
+from services.email_service import email_service
 
 app = FastAPI(title="AI Prompt Helper API", version="1.0.0")
 
@@ -152,27 +155,40 @@ async def register_user(request: UserRegistrationRequest, db: Session = Depends(
         # Hash password
         hashed_password = hash_password(request.password)
         
+        # Generate email verification token
+        verification_token = generate_verification_token()
+        
         # Create new user
         new_user = User(
             email=normalized_email,
             name=format_user_display_name(request.name),
             hashed_password=hashed_password,
             subscription_tier=SubscriptionTier.FREE,
-            is_active=True
+            is_active=True,
+            is_email_verified=False,
+            email_verification_token=verification_token
         )
         
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
         
-        # Create tokens
+        # Send verification email
+        email_sent = await email_service.send_verification_email(
+            to_email=new_user.email,
+            verification_token=verification_token,
+            user_name=new_user.name
+        )
+        
+        # Create tokens (for immediate access to non-verification-required features)
         tokens = create_tokens_for_user(new_user)
         
         return RegisterResponse(
             success=True,
-            message="User registered successfully",
-            user=UserProfileResponse.from_orm(new_user),
-            tokens=TokenResponse(**tokens)
+            message="User registered successfully. Please check your email to verify your account.",
+            user=UserResponse.from_orm(new_user),
+            tokens=TokenResponse(**tokens),
+            verification_required=True
         )
         
     except IntegrityError:
@@ -338,14 +354,17 @@ async def reset_password(
         # Generate reset token
         reset_token = generate_password_reset_token(user.email)
         
-        # In a real application, you would send this token via email
-        # For now, we'll just return success
-        # TODO: Implement email sending
+        # Send password reset email
+        email_sent = await email_service.send_password_reset_email(
+            to_email=user.email,
+            reset_token=reset_token,
+            user_name=user.name
+        )
         
+        # Always return success to prevent email enumeration attacks
         return SuccessResponse(
             success=True,
-            message="Password reset link sent to email",
-            data={"reset_token": reset_token}  # Remove this in production
+            message="If the email exists, a reset link has been sent"
         )
         
     except Exception as e:
@@ -413,6 +432,101 @@ async def auth_health_check():
         success=True,
         message="Authentication system is healthy"
     )
+
+
+@app.post("/auth/verify-email", response_model=SuccessResponse)
+async def verify_email(request: EmailVerificationRequest, db: Session = Depends(get_db_session)):
+    """Verify user email with verification token"""
+    try:
+        # Find user by verification token
+        user = db.query(User).filter(
+            User.email_verification_token == request.token,
+            User.is_email_verified == False
+        ).first()
+        
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired verification token"
+            )
+        
+        # Mark email as verified
+        user.is_email_verified = True
+        user.email_verification_token = None
+        user.email_verified_at = datetime.utcnow()
+        
+        db.commit()
+        db.refresh(user)
+        
+        return SuccessResponse(
+            success=True,
+            message="Email verified successfully"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to verify email"
+        )
+
+
+@app.post("/auth/resend-verification", response_model=SuccessResponse)
+async def resend_verification(request: ResendVerificationRequest, db: Session = Depends(get_db_session)):
+    """Resend email verification token"""
+    try:
+        # Find user by email
+        user = db.query(User).filter(User.email == request.email).first()
+        
+        if not user:
+            # Don't reveal if email exists or not for security
+            return SuccessResponse(
+                success=True,
+                message="If the email address exists and is unverified, a verification email has been sent"
+            )
+        
+        # Only send if email is not already verified
+        if user.is_email_verified:
+            return SuccessResponse(
+                success=True,
+                message="Email is already verified"
+            )
+        
+        # Generate new verification token
+        verification_token = generate_verification_token()
+        user.email_verification_token = verification_token
+        
+        db.commit()
+        
+        # Send verification email
+        email_sent = await email_service.send_verification_email(
+            to_email=user.email,
+            verification_token=verification_token,
+            user_name=user.name
+        )
+        
+        if not email_sent:
+            # Log the error but don't expose it to the user
+            return SuccessResponse(
+                success=True,
+                message="If the email address exists and is unverified, a verification email has been sent"
+            )
+        
+        return SuccessResponse(
+            success=True,
+            message="If the email address exists and is unverified, a verification email has been sent"
+        )
+        
+    except Exception as e:
+        db.rollback()
+        # Log the error but don't expose it to the user
+        return SuccessResponse(
+            success=True,
+            message="If the email address exists and is unverified, a verification email has been sent"
+        )
+
 
 @app.get("/api/templates", response_model=TemplateResponse)
 async def get_templates():
