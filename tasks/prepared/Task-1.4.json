@@ -1,0 +1,335 @@
+{
+  "task_id": "Task-1.4",
+  "task_description": "Context Preservation Engine - Design context data structure for AI sessions, implement context capture APIs, build context restoration system, and add context management UI to existing HTMX frontend",
+  "current_manifest": {
+    "manifest_version": "1.0.0",
+    "generated_at": "2025-01-11T21:00:00Z",
+    "project_name": "AIhelpers",
+    "project_description": "AI coding workflow management platform with prompt generation and project brief parsing capabilities",
+    "total_source_files": 19,
+    "programming_languages": ["Python", "JavaScript", "HTML", "CSS"],
+    "frameworks": ["FastAPI", "HTMX", "Click"],
+    "current_authentication": "None - public access to all endpoints",
+    "current_database": "File-based storage, with SQLAlchemy models implemented but not yet integrated",
+    "current_context_handling": "None - no session context preservation capabilities",
+    "key_files": {
+      "web_app": "src/webapp/main.py",
+      "frontend": "src/webapp/static/index.html",
+      "models": "src/models/ (created but not integrated)",
+      "existing_endpoints": ["get_templates", "parse_template_endpoint", "generate_prompt", "process_brief", "validate_brief", "parsinator_health_check"],
+      "session_context_model": "src/models/session_context.py (exists but not used)"
+    },
+    "architectural_overview": {
+      "system_type": "Full-stack web application with CLI tools",
+      "primary_components": [
+        "FastAPI web server",
+        "HTMX frontend",
+        "Parsinator CLI system",
+        "AI prompt generation",
+        "Project brief processing"
+      ],
+      "data_flow": "User input → Template processing → AI generation → Task creation → JSON output",
+      "key_integrations": [
+        "Google Gemini AI for prompt generation",
+        "Click for CLI interfaces",
+        "FastAPI for web API",
+        "HTMX for frontend interactivity"
+      ]
+    }
+  },
+  "expected_manifest": {
+    "manifest_version": "1.0.4",
+    "project_name": "AIhelpers",
+    "total_source_files": 27,
+    "programming_languages": ["Python", "JavaScript", "HTML", "CSS"],
+    "frameworks": ["FastAPI", "HTMX", "Click", "SQLAlchemy"],
+    "new_context_capabilities": "Full session context preservation, capture, and restoration for AI tools",
+    "new_files": [
+      {
+        "path": "src/services/__init__.py",
+        "type": "package",
+        "purpose": "Services package initialization",
+        "exports": ["ContextService"]
+      },
+      {
+        "path": "src/services/context_service.py",
+        "type": "service",
+        "purpose": "Core context preservation service with capture, storage, and restoration logic",
+        "exports": ["ContextService", "ContextCompressionUtility", "ContextValidationError"]
+      },
+      {
+        "path": "src/api/__init__.py",
+        "type": "package",
+        "purpose": "API modules package initialization",
+        "exports": ["context_router"]
+      },
+      {
+        "path": "src/api/context_endpoints.py",
+        "type": "api",
+        "purpose": "FastAPI endpoints for context capture, storage, and retrieval",
+        "exports": ["context_router", "ContextCaptureRequest", "ContextRestoreResponse"]
+      },
+      {
+        "path": "src/webapp/static/context-manager.js",
+        "type": "frontend",
+        "purpose": "JavaScript module for context management UI interactions",
+        "exports": ["ContextManager", "initContextUI"]
+      },
+      {
+        "path": "src/schemas/__init__.py",
+        "type": "package",
+        "purpose": "Pydantic schemas package initialization",
+        "exports": ["ContextSchemas"]
+      },
+      {
+        "path": "src/schemas/context_schemas.py",
+        "type": "schema",
+        "purpose": "Pydantic models for context-related API requests and responses",
+        "exports": ["ContextCaptureRequest", "ContextRestoreResponse", "ContextMetadata", "ContextSearchRequest"]
+      },
+      {
+        "path": "src/utils/context_compression.py",
+        "type": "utility",
+        "purpose": "Context data compression and decompression utilities for storage optimization",
+        "exports": ["compress_context", "decompress_context", "estimate_context_size"]
+      }
+    ],
+    "modified_files": [
+      {
+        "path": "src/webapp/main.py",
+        "changes": "Add context API router, integrate context endpoints, add context-related HTMX endpoints"
+      },
+      {
+        "path": "src/webapp/static/index.html",
+        "changes": "Add new Context tab, context management UI elements, context save/restore controls"
+      },
+      {
+        "path": "src/webapp/static/style.css",
+        "changes": "Add styling for context management interface, context preview panels"
+      },
+      {
+        "path": "src/webapp/static/app.js",
+        "changes": "Integrate context management functionality, add context UI event handlers"
+      },
+      {
+        "path": "requirements.txt",
+        "changes": "Add dependencies for context compression (zlib), advanced JSON handling (orjson)"
+      }
+    ],
+    "new_endpoints": [
+      "POST /api/context/capture",
+      "GET /api/context/{context_id}",
+      "PUT /api/context/{context_id}",
+      "DELETE /api/context/{context_id}",
+      "GET /api/context/search",
+      "POST /api/context/restore/{context_id}",
+      "GET /api/context/preview/{context_id}",
+      "HTMX: /htmx/context/list",
+      "HTMX: /htmx/context/save-form",
+      "HTMX: /htmx/context/preview/{context_id}"
+    ]
+  },
+  "implementation_notes": {
+    "approach": "Build comprehensive context preservation system that integrates with existing SQLAlchemy models, provides efficient storage and retrieval, and extends the current HTMX frontend with context management capabilities. Focus on preparing for AI tool integrations while maintaining current functionality.",
+    "files_to_create": [
+      {
+        "file": "src/services/__init__.py",
+        "purpose": "Package initialization for service layer",
+        "key_exports": ["ContextService"]
+      },
+      {
+        "file": "src/services/context_service.py",
+        "purpose": "Core business logic for context preservation including compression, validation, and optimization",
+        "key_exports": ["ContextService", "ContextCompressionUtility", "ContextValidationError"]
+      },
+      {
+        "file": "src/api/__init__.py",
+        "purpose": "API package initialization",
+        "key_exports": ["context_router"]
+      },
+      {
+        "file": "src/api/context_endpoints.py",
+        "purpose": "RESTful API endpoints for all context operations",
+        "key_exports": ["context_router", "ContextCaptureRequest", "ContextRestoreResponse"]
+      },
+      {
+        "file": "src/schemas/__init__.py",
+        "purpose": "Pydantic schemas package initialization",
+        "key_exports": ["ContextSchemas"]
+      },
+      {
+        "file": "src/schemas/context_schemas.py",
+        "purpose": "Data validation and serialization schemas for context APIs",
+        "key_exports": ["ContextCaptureRequest", "ContextRestoreResponse", "ContextMetadata", "ContextSearchRequest"]
+      },
+      {
+        "file": "src/utils/context_compression.py",
+        "purpose": "Utilities for compressing large context data for efficient storage",
+        "key_exports": ["compress_context", "decompress_context", "estimate_context_size"]
+      },
+      {
+        "file": "src/webapp/static/context-manager.js",
+        "purpose": "Frontend JavaScript for context management UI interactions",
+        "key_exports": ["ContextManager", "initContextUI"]
+      }
+    ],
+    "files_to_modify": [
+      {
+        "file": "src/webapp/main.py",
+        "changes": "Integrate context API router, add HTMX endpoints for context UI, add database session dependency injection"
+      },
+      {
+        "file": "src/webapp/static/index.html",
+        "changes": "Add Context tab to existing tab system, add context management interface elements"
+      },
+      {
+        "file": "src/webapp/static/style.css",
+        "changes": "Add CSS for context management interface, context preview styling, responsive context panels"
+      },
+      {
+        "file": "src/webapp/static/app.js",
+        "changes": "Add context-related event handlers, integrate with existing tab system"
+      },
+      {
+        "file": "requirements.txt",
+        "changes": "Add orjson for fast JSON processing, no additional compression libraries needed (using built-in zlib)"
+      }
+    ],
+    "dependencies": [
+      "orjson>=3.9.0"
+    ],
+    "integration_points": [
+      "Uses existing SessionContext model from src/models/session_context.py",
+      "Integrates with current database session management when implemented",
+      "Extends existing HTMX frontend tab system",
+      "Prepares for future AI tool integrations (Claude Code, Cursor)",
+      "Maintains compatibility with current prompt generation workflow"
+    ],
+    "testing_approach": "Create unit tests for context service, integration tests for API endpoints, frontend tests for UI components, performance tests for context compression",
+    "context_architecture": {
+      "data_structure": {
+        "context_data": {
+          "conversation_history": "List of messages/interactions",
+          "code_context": "Current files, functions, variables in scope",
+          "project_metadata": "Project structure, dependencies, configuration",
+          "ai_tool_state": "Tool-specific state and configuration",
+          "user_preferences": "User settings and preferences for the session"
+        },
+        "compression_strategy": "JSON compression using zlib, metadata-driven optimization",
+        "storage_optimization": "Separate metadata for fast queries, compressed data for storage"
+      },
+      "capture_methods": [
+        "Manual save via UI",
+        "Automatic capture at session milestones",
+        "API-driven capture from external tools",
+        "Periodic background capture"
+      ],
+      "restoration_features": [
+        "Full context restoration",
+        "Partial context selection",
+        "Context merging and conflict resolution",
+        "Tool-specific format optimization"
+      ]
+    }
+  },
+  "acceptance_criteria": [
+    "Context capture API can successfully save session data with compression",
+    "Context restoration API can retrieve and decompress context data",
+    "Context search functionality works with metadata filtering",
+    "HTMX frontend displays context list with search and filtering",
+    "Context save/restore UI workflows function correctly",
+    "Context preview shows formatted context summary",
+    "Context compression reduces storage size by at least 60%",
+    "API endpoints handle errors gracefully with proper HTTP status codes",
+    "Context data validation prevents malformed data storage",
+    "Integration with existing SQLAlchemy models works correctly",
+    "Frontend integrates seamlessly with existing tab system",
+    "Context management doesn't break existing prompt generation functionality",
+    "Performance tests show acceptable response times for context operations",
+    "Unit tests achieve >85% code coverage for new components"
+  ],
+  "estimated_complexity": "High",
+  "prerequisites": [
+    "SQLAlchemy models (Task-1.1) completed and integrated",
+    "Database connection configured and working",
+    "Existing HTMX frontend structure in place",
+    "FastAPI application structure understood",
+    "Basic understanding of context preservation requirements"
+  ],
+  "risk_factors": [
+    "Large context data size impacting performance",
+    "Complex compression/decompression logic",
+    "Integration complexity with existing HTMX frontend",
+    "Database model integration if not yet completed",
+    "Context data format standardization challenges"
+  ],
+  "success_metrics": [
+    "Context capture and restoration operations complete in <2 seconds",
+    "Context compression achieves 60%+ size reduction",
+    "Zero data loss during context save/restore operations",
+    "UI operations feel responsive and intuitive",
+    "API endpoints handle 100+ concurrent context operations",
+    "Context search returns results in <500ms",
+    "Integration tests pass with 100% success rate"
+  ],
+  "technical_specifications": {
+    "context_data_format": {
+      "version": "1.0",
+      "structure": {
+        "metadata": {
+          "id": "UUID",
+          "user_id": "Integer",
+          "ai_tool": "String",
+          "created_at": "DateTime",
+          "title": "String",
+          "tags": "Array<String>",
+          "context_size": "Integer (bytes)",
+          "compression_ratio": "Float"
+        },
+        "context": {
+          "conversation": "Array<Message>",
+          "code_files": "Dict<filename, content>",
+          "project_state": "Dict",
+          "ai_config": "Dict",
+          "custom_data": "Dict"
+        }
+      }
+    },
+    "api_endpoints": {
+      "POST /api/context/capture": {
+        "request": "ContextCaptureRequest",
+        "response": "ContextMetadata",
+        "description": "Capture and store new context data"
+      },
+      "GET /api/context/{context_id}": {
+        "response": "ContextRestoreResponse",
+        "description": "Retrieve specific context by ID"
+      },
+      "PUT /api/context/{context_id}": {
+        "request": "ContextCaptureRequest", 
+        "response": "ContextMetadata",
+        "description": "Update existing context"
+      },
+      "DELETE /api/context/{context_id}": {
+        "response": "SuccessResponse",
+        "description": "Delete context"
+      },
+      "GET /api/context/search": {
+        "query_params": "ContextSearchRequest",
+        "response": "Array<ContextMetadata>",
+        "description": "Search contexts with filtering"
+      },
+      "POST /api/context/restore/{context_id}": {
+        "query_params": "tool_format",
+        "response": "ContextRestoreResponse",
+        "description": "Restore context optimized for specific tool"
+      }
+    },
+    "database_integration": {
+      "primary_model": "SessionContext (from src/models/session_context.py)",
+      "fields_used": ["id", "user_id", "ai_tool", "context_data", "metadata", "created_at", "updated_at"],
+      "indexing_strategy": "user_id, ai_tool, created_at for search performance",
+      "compression_field": "context_data (stored as compressed JSONB)"
+    }
+  }
+}

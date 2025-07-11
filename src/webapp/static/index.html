@@ -14,6 +14,7 @@
         <div class="tab-nav">
             <button class="tab-btn active" onclick="switchTab('prompts')">Prompt Generation</button>
             <button class="tab-btn" onclick="switchTab('parsinator')">Parsinator</button>
+            <button class="tab-btn" onclick="switchTab('context')">Context Manager</button>
         </div>
 
         <!-- Prompt Generation Tab -->
@@ -65,8 +66,137 @@
                 </div>
             </div>
         </div>
+
+        <!-- Context Manager Tab -->
+        <div id="context-tab" class="tab-content">
+            <h2>Context Manager</h2>
+            <p>Save, restore, and manage your AI session contexts across different tools.</p>
+
+            <div class="context-manager">
+                <!-- Context Actions Bar -->
+                <div class="context-actions-bar">
+                    <div class="context-actions-left">
+                        <button id="save-context-btn" class="btn-primary">Save Current Context</button>
+                        <button id="load-context-btn" class="btn-secondary">Load Context</button>
+                    </div>
+                    <div class="context-actions-right">
+                        <input type="text" id="context-search" placeholder="Search contexts..." class="context-search-input">
+                        <select id="tool-filter" class="tool-filter">
+                            <option value="">All Tools</option>
+                            <option value="claude-code">Claude Code</option>
+                            <option value="cursor">Cursor</option>
+                            <option value="chatgpt">ChatGPT</option>
+                            <option value="copilot">GitHub Copilot</option>
+                            <option value="generic">Generic</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Context List -->
+                <div class="context-list-container">
+                    <div id="context-list" class="context-list">
+                        <div class="loading-message">Loading contexts...</div>
+                    </div>
+                </div>
+
+                <!-- Context Save Form (initially hidden) -->
+                <div id="context-save-form" class="context-form" style="display: none;">
+                    <h3>Save Context</h3>
+                    <form id="save-context-form">
+                        <div class="form-group">
+                            <label for="context-ai-tool">AI Tool:</label>
+                            <select id="context-ai-tool" name="ai_tool" required>
+                                <option value="claude-code">Claude Code</option>
+                                <option value="cursor">Cursor</option>
+                                <option value="chatgpt">ChatGPT</option>
+                                <option value="copilot">GitHub Copilot</option>
+                                <option value="generic">Generic</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="context-title">Title:</label>
+                            <input type="text" id="context-title" name="title" placeholder="Enter context title...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="context-description">Description:</label>
+                            <textarea id="context-description" name="description" placeholder="Enter context description..." rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="context-tags">Tags (comma-separated):</label>
+                            <input type="text" id="context-tags" name="tags" placeholder="react, frontend, auth...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="context-data">Context Data (JSON):</label>
+                            <textarea id="context-data" name="context_data" placeholder="Paste your context data as JSON..." rows="10" required></textarea>
+                            <small class="form-help">
+                                Include conversation history, code files, project state, and any relevant data for your AI session.
+                            </small>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Save Context</button>
+                            <button type="button" class="btn-secondary" onclick="hideContextForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Context Preview Modal (initially hidden) -->
+                <div id="context-preview-modal" class="context-modal" style="display: none;">
+                    <div class="modal-overlay" onclick="hideContextPreview()"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Context Preview</h3>
+                            <button class="modal-close" onclick="hideContextPreview()">&times;</button>
+                        </div>
+                        <div id="context-preview-content" class="modal-body">
+                            <!-- Preview content will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Context Restore Modal (initially hidden) -->
+                <div id="context-restore-modal" class="context-modal" style="display: none;">
+                    <div class="modal-overlay" onclick="hideContextRestore()"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Restore Context</h3>
+                            <button class="modal-close" onclick="hideContextRestore()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="restore-options">
+                                <label for="restore-format">Target Tool Format:</label>
+                                <select id="restore-format">
+                                    <option value="">Generic Format</option>
+                                    <option value="claude-code">Claude Code</option>
+                                    <option value="cursor">Cursor</option>
+                                    <option value="chatgpt">ChatGPT</option>
+                                    <option value="copilot">GitHub Copilot</option>
+                                </select>
+                            </div>
+                            <div id="context-restore-content" class="restore-content">
+                                <!-- Restored context will be displayed here -->
+                            </div>
+                            <div class="modal-actions">
+                                <button id="copy-context-btn" class="btn-primary">Copy to Clipboard</button>
+                                <button class="btn-secondary" onclick="hideContextRestore()">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Messages -->
+                <div id="context-status" class="context-status" style="display: none;">
+                    <!-- Status messages will appear here -->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="app_fixed.js?v=5"></script>
+    <script src="context-manager.js"></script>
+    <script src="app_fixed.js?v=6"></script>
 </body>
 </html>

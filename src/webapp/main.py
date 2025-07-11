@@ -38,6 +38,7 @@ from parsinator_service import get_parsinator_service
 
 # Import routers
 from routers.prompts import prompt_router
+from api.context_endpoints import context_router
 
 # Import authentication modules
 from auth import (
@@ -63,6 +64,7 @@ app = FastAPI(title="AI Prompt Helper API", version="1.0.0")
 
 # Include routers
 app.include_router(prompt_router)
+app.include_router(context_router)
 
 # Add CORS middleware to allow frontend requests
 app.add_middleware(

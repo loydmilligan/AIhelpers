@@ -10,3 +10,4 @@ passlib[bcrypt]>=1.7.4
 python-multipart>=0.0.5
 email-validator>=1.1.0
 diff-match-patch>=20230430
+orjson>=3.9.0

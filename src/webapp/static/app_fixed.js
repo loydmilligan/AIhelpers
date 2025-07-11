@@ -397,6 +397,11 @@ function switchTab(tabName) {
     
     // Add active class to clicked tab button
     event.target.classList.add('active');
+    
+    // Initialize context manager when context tab is activated
+    if (tabName === 'context' && !window.contextManager) {
+        initContextUI();
+    }
 }
 
 // Parsinator functionality
