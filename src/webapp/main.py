@@ -36,6 +36,9 @@ from utils import save_as_json
 # Import Parsinator service
 from parsinator_service import get_parsinator_service
 
+# Import routers
+from routers.prompts import prompt_router
+
 # Import authentication modules
 from auth import (
     hash_password, verify_password, create_tokens_for_user,
@@ -52,9 +55,14 @@ from auth.utils import (
     validate_email_address, format_user_display_name
 )
 from models.user import User, SubscriptionTier
+from models.prompt import Prompt
 from config.database import get_db_session
+from services.prompt_analytics import PromptAnalyticsService
 
 app = FastAPI(title="AI Prompt Helper API", version="1.0.0")
+
+# Include routers
+app.include_router(prompt_router)
 
 # Add CORS middleware to allow frontend requests
 app.add_middleware(
@@ -444,8 +452,11 @@ async def parse_template_endpoint(request: ParseTemplateRequest):
         raise HTTPException(status_code=500, detail=f"Error parsing template: {str(e)}")
 
 @app.post("/api/generate", response_model=GeneratePromptResponse)
-async def generate_prompt(request: GeneratePromptRequest, current_user: User = Depends(require_auth)):
+async def generate_prompt(request: GeneratePromptRequest, current_user: User = Depends(require_auth), db: Session = Depends(get_db_session)):
     """Generate the final prompt using AI"""
+    import time
+    start_time = time.time()
+    
     try:
         template_path = Path(prompts_dir) / request.template_name
         
@@ -463,8 +474,44 @@ async def generate_prompt(request: GeneratePromptRequest, current_user: User = D
         # Generate the final prompt using AI
         final_prompt = assemble_prompt(template_content, request.user_data, meta_prompt_file)
         
+        # Calculate response time
+        response_time = time.time() - start_time
+        
         # Check if generation was successful (basic error check)
-        if final_prompt.startswith("An error occurred:"):
+        success = not final_prompt.startswith("An error occurred:")
+        
+        # Try to find corresponding database prompt for analytics
+        try:
+            # Look for a prompt with matching title (from template name)
+            template_title = request.template_name.replace('_', ' ').replace('-', ' ').title()
+            if template_title.endswith('.md'):
+                template_title = template_title[:-3]
+            if template_title.endswith(' Template'):
+                template_title = template_title[:-9]
+                
+            db_prompt = db.query(Prompt).filter(
+                Prompt.title.ilike(f"%{template_title}%"),
+                Prompt.is_active == True
+            ).first()
+            
+            if db_prompt:
+                # Track usage in database
+                analytics_service = PromptAnalyticsService(db)
+                analytics_service.track_usage(
+                    prompt_id=db_prompt.id,
+                    user_id=current_user.id,
+                    response_time=response_time,
+                    success=success,
+                    context_data={
+                        "template_name": request.template_name,
+                        "user_data_keys": list(request.user_data.keys())
+                    }
+                )
+        except Exception as analytics_error:
+            # Don't fail the main request if analytics fails
+            print(f"Analytics tracking failed: {analytics_error}")
+        
+        if not success:
             return GeneratePromptResponse(
                 generated_prompt="",
                 success=False,

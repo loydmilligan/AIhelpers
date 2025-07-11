@@ -1,0 +1,423 @@
+{
+  "task_id": "Task-1.3",
+  "task_name": "Enhanced Prompt Library Backend",
+  "epic": "Intelligent Prompt Library",
+  "estimated_time": "5-6 days",
+  "priority": "High",
+  "phase": "Phase 1: Foundation & Core Features (Weeks 1-4)",
+  "preparation_timestamp": "2025-01-11T22:00:00Z",
+  "prepared_by": "Claude Code Process Task Command",
+  
+  "task_description": {
+    "overview": "Extend current prompt system with advanced organization, semantic search capabilities, versioning system, and analytics foundation for tracking prompt usage and effectiveness",
+    "business_context": "Transform basic prompt templates into a comprehensive, searchable library with version control and analytics to improve user productivity and prompt effectiveness",
+    "technical_context": "Migrate existing file-based prompt templates to database, add full-text search using PostgreSQL, implement versioning system, and create analytics tracking infrastructure"
+  },
+  
+  "subtasks": [
+    {
+      "id": "1.3.1",
+      "title": "Extend current prompt system with advanced organization",
+      "description": "Migrate existing prompt templates to database, add categories, tags, and metadata fields while preserving existing template functionality",
+      "estimated_hours": 12,
+      "priority": "Critical"
+    },
+    {
+      "id": "1.3.2", 
+      "title": "Implement semantic search capabilities",
+      "description": "Add full-text search using PostgreSQL, create search API endpoints, add filtering by tags/categories/ownership",
+      "estimated_hours": 10,
+      "priority": "High"
+    },
+    {
+      "id": "1.3.3",
+      "title": "Create prompt versioning system",
+      "description": "Design version control schema, implement create/update/revert endpoints, add diff functionality",
+      "estimated_hours": 10,
+      "priority": "High"
+    },
+    {
+      "id": "1.3.4",
+      "title": "Build prompt analytics foundation",
+      "description": "Track usage statistics and effectiveness, create analytics endpoints, add basic metrics collection",
+      "estimated_hours": 8,
+      "priority": "Medium"
+    }
+  ],
+  
+  "current_manifest_state": {
+    "total_source_files": 26,
+    "current_prompt_system": {
+      "storage": "File-based in prompts/ directory",
+      "templates": "Markdown files with {{placeholder}} format",
+      "organization": "Flat file structure",
+      "search": "None - manual file browsing",
+      "versioning": "None - manual file management",
+      "analytics": "None"
+    },
+    "existing_prompt_files": [
+      "prompts/meta_prompt.md",
+      "Various template files in prompts/ directory"
+    ],
+    "existing_endpoints": [
+      "/api/templates - List available templates",
+      "/api/parse-template - Parse template placeholders",
+      "/api/generate-prompt - Generate prompt with AI"
+    ],
+    "database_status": "SQLAlchemy models from Task-1.1 available",
+    "auth_status": "Authentication system from Task-1.2 available"
+  },
+  
+  "expected_post_task_manifest": {
+    "new_files_to_create": [
+      {
+        "path": "src/models/prompt.py",
+        "type": "model",
+        "purpose": "Extended prompt model with categories, tags, and metadata",
+        "exports": ["Prompt", "PromptVersion", "PromptCategory", "PromptTag", "PromptMetadata"],
+        "size_estimate": 3000
+      },
+      {
+        "path": "src/models/prompt_analytics.py",
+        "type": "model",
+        "purpose": "Analytics models for prompt usage and effectiveness tracking",
+        "exports": ["PromptUsage", "PromptEffectiveness", "PromptAnalytics"],
+        "size_estimate": 2000
+      },
+      {
+        "path": "src/services/prompt_service.py",
+        "type": "service",
+        "purpose": "Business logic for prompt management",
+        "exports": ["PromptService", "create_prompt", "update_prompt", "search_prompts"],
+        "size_estimate": 4000
+      },
+      {
+        "path": "src/services/prompt_search.py",
+        "type": "service",
+        "purpose": "Full-text search implementation for prompts",
+        "exports": ["PromptSearchService", "search_prompts", "build_search_query"],
+        "size_estimate": 2500
+      },
+      {
+        "path": "src/services/prompt_version.py",
+        "type": "service",
+        "purpose": "Version control logic for prompts",
+        "exports": ["PromptVersionService", "create_version", "revert_version", "diff_versions"],
+        "size_estimate": 3000
+      },
+      {
+        "path": "src/services/prompt_analytics.py",
+        "type": "service",
+        "purpose": "Analytics collection and reporting for prompts",
+        "exports": ["PromptAnalyticsService", "track_usage", "calculate_effectiveness"],
+        "size_estimate": 2500
+      },
+      {
+        "path": "src/webapp/routers/__init__.py",
+        "type": "package",
+        "purpose": "Router package initialization",
+        "size_estimate": 100
+      },
+      {
+        "path": "src/webapp/routers/prompts.py",
+        "type": "router",
+        "purpose": "FastAPI router for enhanced prompt endpoints",
+        "exports": ["prompt_router"],
+        "size_estimate": 4000
+      },
+      {
+        "path": "src/webapp/schemas/prompt.py",
+        "type": "schema",
+        "purpose": "Pydantic schemas for prompt requests/responses",
+        "exports": ["PromptCreate", "PromptUpdate", "PromptResponse", "PromptSearchRequest"],
+        "size_estimate": 2000
+      },
+      {
+        "path": "src/scripts/migrate_prompts.py",
+        "type": "script",
+        "purpose": "Migration script to move file-based prompts to database",
+        "exports": ["migrate_prompts_to_database"],
+        "size_estimate": 1500
+      },
+      {
+        "path": "alembic/versions/002_prompt_enhancements.py",
+        "type": "migration",
+        "purpose": "Database migration for enhanced prompt tables",
+        "size_estimate": 1000
+      }
+    ],
+    "files_to_modify": [
+      {
+        "path": "src/webapp/main.py",
+        "current_size": 12000,
+        "expected_size": 13000,
+        "modifications": [
+          "Import and include prompt router",
+          "Update existing prompt endpoints to use database",
+          "Add prompt analytics middleware",
+          "Maintain backward compatibility"
+        ]
+      },
+      {
+        "path": "src/prompt_generator.py",
+        "current_size": 4821,
+        "expected_size": 5500,
+        "modifications": [
+          "Update to use database-stored prompts",
+          "Add prompt usage tracking",
+          "Maintain file-based fallback option"
+        ]
+      },
+      {
+        "path": "src/models/__init__.py",
+        "current_size": 200,
+        "expected_size": 300,
+        "modifications": [
+          "Export new prompt models",
+          "Export analytics models"
+        ]
+      }
+    ],
+    "new_dependencies": [
+      "diff-match-patch>=20230430",
+      "elasticsearch>=8.0.0 (optional for advanced search)"
+    ],
+    "total_source_files": 37,
+    "architectural_changes": [
+      "Prompts migrated from file system to database",
+      "Full-text search capability added",
+      "Version control system for prompts",
+      "Analytics tracking infrastructure",
+      "Modular service layer for prompt operations"
+    ]
+  },
+  
+  "implementation_approach": {
+    "step_1_database_schema": {
+      "description": "Extend database schema for enhanced prompt features",
+      "technical_details": [
+        "Create prompts table with title, content, description, category_id, owner_id",
+        "Add prompt_categories table for hierarchical categorization",
+        "Create prompt_tags many-to-many relationship",
+        "Add prompt_metadata for flexible key-value storage",
+        "Create indexes for full-text search on title, content, description"
+      ],
+      "files_involved": ["src/models/prompt.py", "alembic/versions/002_prompt_enhancements.py"]
+    },
+    "step_2_data_migration": {
+      "description": "Migrate existing file-based prompts to database",
+      "technical_details": [
+        "Scan prompts/ directory for all template files",
+        "Parse each template to extract metadata",
+        "Create database entries preserving original functionality",
+        "Maintain mapping between file names and database IDs",
+        "Add default categories based on file organization"
+      ],
+      "files_involved": ["src/scripts/migrate_prompts.py"]
+    },
+    "step_3_search_implementation": {
+      "description": "Implement PostgreSQL full-text search",
+      "technical_details": [
+        "Create tsvector columns for searchable content",
+        "Implement GIN indexes for performance",
+        "Build search query parser for advanced filtering",
+        "Add relevance ranking to search results",
+        "Support search by title, content, tags, categories"
+      ],
+      "files_involved": ["src/services/prompt_search.py", "src/webapp/routers/prompts.py"]
+    },
+    "step_4_versioning_system": {
+      "description": "Build comprehensive version control for prompts",
+      "technical_details": [
+        "Create prompt_versions table with version number, content, change description",
+        "Implement automatic versioning on updates",
+        "Add diff calculation between versions",
+        "Create revert functionality to restore previous versions",
+        "Track who made changes and when"
+      ],
+      "files_involved": ["src/models/prompt.py", "src/services/prompt_version.py"]
+    },
+    "step_5_analytics_foundation": {
+      "description": "Implement usage tracking and analytics",
+      "technical_details": [
+        "Create prompt_usage table to track each use",
+        "Add effectiveness scoring based on user feedback",
+        "Track generation success/failure rates",
+        "Implement basic metrics aggregation",
+        "Create analytics API endpoints"
+      ],
+      "files_involved": ["src/models/prompt_analytics.py", "src/services/prompt_analytics.py"]
+    },
+    "step_6_api_endpoints": {
+      "description": "Create comprehensive API for prompt management",
+      "technical_details": [
+        "GET /api/prompts - List prompts with pagination and filtering",
+        "POST /api/prompts - Create new prompt",
+        "GET /api/prompts/{id} - Get prompt details with versions",
+        "PUT /api/prompts/{id} - Update prompt (creates new version)",
+        "DELETE /api/prompts/{id} - Soft delete prompt",
+        "POST /api/prompts/search - Advanced search endpoint",
+        "GET /api/prompts/{id}/versions - List all versions",
+        "POST /api/prompts/{id}/revert/{version} - Revert to version",
+        "GET /api/prompts/{id}/analytics - Get usage analytics",
+        "POST /api/prompts/{id}/track-usage - Track prompt usage"
+      ],
+      "files_involved": ["src/webapp/routers/prompts.py", "src/webapp/schemas/prompt.py"]
+    },
+    "step_7_backward_compatibility": {
+      "description": "Maintain compatibility with existing prompt system",
+      "technical_details": [
+        "Update existing endpoints to use database prompts",
+        "Maintain file-based template support as fallback",
+        "Ensure prompt_generator.py works with both sources",
+        "Keep existing API response formats",
+        "Add migration flag for gradual transition"
+      ],
+      "files_involved": ["src/webapp/main.py", "src/prompt_generator.py"]
+    }
+  },
+  
+  "integration_points": {
+    "database_integration": {
+      "description": "Integration with SQLAlchemy models from Task-1.1",
+      "dependencies": ["Task-1.1 must be completed for database foundation"],
+      "integration_approach": "Extend existing Base model, use established database session management"
+    },
+    "authentication_integration": {
+      "description": "Integration with auth system from Task-1.2",
+      "dependencies": ["Task-1.2 must be completed for user ownership"],
+      "integration_approach": "Use current_user for prompt ownership, implement access control"
+    },
+    "existing_prompt_system": {
+      "description": "Integration with current file-based prompt system",
+      "current_functionality": [
+        "Template parsing with placeholders",
+        "AI-powered prompt assembly",
+        "File-based template storage"
+      ],
+      "integration_approach": "Gradual migration, maintain backward compatibility"
+    },
+    "gemini_integration": {
+      "description": "Maintain Gemini AI integration for prompt assembly",
+      "current_usage": "Used in prompt_generator.py for AI assembly",
+      "integration_approach": "Continue using Gemini, add analytics tracking"
+    }
+  },
+  
+  "testing_requirements": {
+    "unit_tests": [
+      "Test prompt model creation and validation",
+      "Test search query building and execution",
+      "Test version control operations",
+      "Test analytics data collection",
+      "Test migration script functionality"
+    ],
+    "integration_tests": [
+      "Test complete prompt CRUD operations",
+      "Test search with various filters",
+      "Test version history and reverting",
+      "Test analytics aggregation",
+      "Test backward compatibility"
+    ],
+    "performance_tests": [
+      "Test search performance with large dataset",
+      "Test concurrent prompt updates",
+      "Test analytics query performance",
+      "Test API response times"
+    ]
+  },
+  
+  "acceptance_criteria": {
+    "functional_requirements": [
+      "All existing prompts migrated to database successfully",
+      "Full-text search returns relevant results quickly",
+      "Version history maintained for all prompt changes",
+      "Analytics data collected for each prompt use",
+      "Categories and tags enable better organization",
+      "API endpoints support all CRUD operations",
+      "Backward compatibility maintained"
+    ],
+    "performance_requirements": [
+      "Search results returned in <500ms for 10k prompts",
+      "Prompt retrieval <100ms",
+      "Version diff calculation <200ms",
+      "Analytics queries <1s for monthly data"
+    ],
+    "data_requirements": [
+      "No data loss during migration",
+      "All prompt templates preserve functionality",
+      "Version history tracks all changes",
+      "Analytics capture relevant usage metrics"
+    ]
+  },
+  
+  "validation_checklist": [
+    "Database schema created with proper indexes",
+    "All prompt templates migrated successfully",
+    "Search functionality returns accurate results",
+    "Version control system tracks all changes",
+    "Analytics data collection working",
+    "API endpoints tested and documented",
+    "Performance requirements met",
+    "Backward compatibility verified",
+    "Security permissions enforced",
+    "Documentation updated"
+  ],
+  
+  "risks_and_mitigations": {
+    "technical_risks": [
+      {
+        "risk": "Data loss during migration",
+        "mitigation": "Create backup, implement rollback capability, test thoroughly",
+        "impact": "High"
+      },
+      {
+        "risk": "Search performance degradation",
+        "mitigation": "Proper indexing, query optimization, caching layer",
+        "impact": "Medium"
+      },
+      {
+        "risk": "Version control complexity",
+        "mitigation": "Simple versioning scheme, clear UI for version management",
+        "impact": "Medium"
+      }
+    ],
+    "business_risks": [
+      {
+        "risk": "User confusion with new organization",
+        "mitigation": "Gradual rollout, maintain familiar interfaces, clear documentation",
+        "impact": "Medium"
+      },
+      {
+        "risk": "Breaking existing workflows",
+        "mitigation": "Maintain backward compatibility, provide migration guide",
+        "impact": "High"
+      }
+    ]
+  },
+  
+  "post_implementation_tasks": [
+    "Create user guide for new prompt features",
+    "Set up monitoring for search performance",
+    "Plan advanced search features (AI-powered)",
+    "Design prompt sharing and marketplace features",
+    "Optimize database queries based on usage patterns"
+  ],
+  
+  "estimated_complexity": "High",
+  "prerequisites": [
+    "Task-1.1 completed (database foundation)",
+    "Task-1.2 completed (user authentication)",
+    "PostgreSQL with full-text search extensions",
+    "Understanding of current prompt template structure"
+  ],
+  
+  "success_metrics": [
+    "100% of prompts migrated successfully",
+    "Search functionality used by >80% of users",
+    "Version history maintained for all changes",
+    "Analytics show prompt usage patterns",
+    "<500ms search response time achieved",
+    "Zero data loss during migration"
+  ]
+}
