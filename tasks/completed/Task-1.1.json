@@ -1,0 +1,253 @@
+{
+  "task_id": "Task-1.1",
+  "task_description": "Database Schema & Models Setup - Design PostgreSQL database schema extending current data structure",
+  "subtask_id": "1.1",
+  "subtask_description": "Design PostgreSQL database schema extending current data structure - Create users, prompts, session_contexts, teams, and analytics tables. Define relationships and foreign key constraints. Plan indexing strategy for search and performance.",
+  "current_manifest": {
+    "manifest_version": "1.0.0",
+    "project_name": "AIhelpers",
+    "total_source_files": 19,
+    "programming_languages": ["Python", "JavaScript", "HTML", "CSS"],
+    "frameworks": ["FastAPI", "HTMX", "Click"],
+    "current_data_storage": "File-based storage for prompts and templates",
+    "current_models": [
+      {
+        "path": "src/parsinator/models.py",
+        "exports": ["Task", "BriefContent", "TaskCollection", "ProjectMetadata", "TaskGenerator", "TaskStatus", "TaskPriority"]
+      }
+    ],
+    "current_web_app": {
+      "path": "src/webapp/main.py",
+      "type": "FastAPI application",
+      "current_endpoints": ["get_templates", "parse_template_endpoint", "generate_prompt", "process_brief", "validate_brief"]
+    }
+  },
+  "expected_manifest": {
+    "manifest_version": "1.0.1",
+    "project_name": "AIhelpers",
+    "total_source_files": 26,
+    "programming_languages": ["Python", "JavaScript", "HTML", "CSS", "SQL"],
+    "frameworks": ["FastAPI", "HTMX", "Click", "SQLAlchemy", "Alembic"],
+    "new_data_storage": "PostgreSQL database with SQLAlchemy ORM",
+    "new_files": [
+      {
+        "path": "src/models/__init__.py",
+        "type": "package",
+        "purpose": "Models package initialization",
+        "exports": ["User", "Prompt", "SessionContext", "Team", "Analytics", "Base"]
+      },
+      {
+        "path": "src/models/base.py",
+        "type": "model",
+        "purpose": "SQLAlchemy base model with common fields",
+        "exports": ["Base", "BaseModel"]
+      },
+      {
+        "path": "src/models/user.py",
+        "type": "model",
+        "purpose": "User model with authentication and profile data",
+        "exports": ["User", "SubscriptionTier"]
+      },
+      {
+        "path": "src/models/prompt.py",
+        "type": "model",
+        "purpose": "Prompt model with versioning and metadata",
+        "exports": ["Prompt", "PromptVersion", "PromptCategory"]
+      },
+      {
+        "path": "src/models/session_context.py",
+        "type": "model",
+        "purpose": "Session context preservation model",
+        "exports": ["SessionContext", "ContextSnapshot"]
+      },
+      {
+        "path": "src/models/team.py",
+        "type": "model",
+        "purpose": "Team collaboration models",
+        "exports": ["Team", "TeamMember", "TeamRole"]
+      },
+      {
+        "path": "src/models/analytics.py",
+        "type": "model",
+        "purpose": "Analytics and usage tracking models",
+        "exports": ["UserActivity", "PromptAnalytics", "UsageMetrics"]
+      },
+      {
+        "path": "src/config/database.py",
+        "type": "config",
+        "purpose": "Database configuration and connection management",
+        "exports": ["get_database_url", "create_engine", "get_db_session"]
+      },
+      {
+        "path": "alembic.ini",
+        "type": "config",
+        "purpose": "Alembic migration configuration"
+      },
+      {
+        "path": "alembic/env.py",
+        "type": "migration",
+        "purpose": "Alembic environment configuration"
+      },
+      {
+        "path": "alembic/versions/001_initial_schema.py",
+        "type": "migration",
+        "purpose": "Initial database schema migration"
+      }
+    ],
+    "updated_files": [
+      {
+        "path": "requirements.txt",
+        "added_dependencies": ["sqlalchemy>=2.0.0", "alembic>=1.12.0", "psycopg2-binary>=2.9.0"]
+      }
+    ]
+  },
+  "implementation_notes": {
+    "approach": "Create comprehensive database schema with SQLAlchemy models, set up Alembic for migrations, and establish connection management. Focus on extensibility and performance optimization.",
+    "files_to_create": [
+      {
+        "file": "src/models/__init__.py",
+        "purpose": "Package initialization with all model imports",
+        "key_exports": ["User", "Prompt", "SessionContext", "Team", "Analytics", "Base"]
+      },
+      {
+        "file": "src/models/base.py",
+        "purpose": "Base model class with common fields (id, created_at, updated_at)",
+        "key_exports": ["Base", "BaseModel"]
+      },
+      {
+        "file": "src/models/user.py",
+        "purpose": "User authentication and profile model",
+        "key_exports": ["User", "SubscriptionTier"]
+      },
+      {
+        "file": "src/models/prompt.py",
+        "purpose": "Prompt storage with versioning and metadata",
+        "key_exports": ["Prompt", "PromptVersion", "PromptCategory"]
+      },
+      {
+        "file": "src/models/session_context.py",
+        "purpose": "AI session context preservation",
+        "key_exports": ["SessionContext", "ContextSnapshot"]
+      },
+      {
+        "file": "src/models/team.py",
+        "purpose": "Team collaboration and membership",
+        "key_exports": ["Team", "TeamMember", "TeamRole"]
+      },
+      {
+        "file": "src/models/analytics.py",
+        "purpose": "Usage analytics and metrics tracking",
+        "key_exports": ["UserActivity", "PromptAnalytics", "UsageMetrics"]
+      },
+      {
+        "file": "src/config/database.py",
+        "purpose": "Database connection and session management",
+        "key_exports": ["get_database_url", "create_engine", "get_db_session"]
+      },
+      {
+        "file": "alembic.ini",
+        "purpose": "Alembic configuration file"
+      },
+      {
+        "file": "alembic/env.py",
+        "purpose": "Alembic environment setup"
+      },
+      {
+        "file": "alembic/versions/001_initial_schema.py",
+        "purpose": "Initial migration creating all tables"
+      }
+    ],
+    "files_to_modify": [
+      {
+        "file": "requirements.txt",
+        "changes": "Add SQLAlchemy, Alembic, psycopg2-binary dependencies"
+      }
+    ],
+    "dependencies": [
+      "sqlalchemy>=2.0.0",
+      "alembic>=1.12.0", 
+      "psycopg2-binary>=2.9.0"
+    ],
+    "integration_points": [
+      "FastAPI app will use SQLAlchemy session dependency",
+      "Existing Parsinator models will be kept separate initially",
+      "Database models will support existing prompt template functionality",
+      "Session context models will prepare for AI tool integrations"
+    ],
+    "testing_approach": "Create unit tests for each model, test database connections, validate migrations work correctly",
+    "database_design": {
+      "tables": {
+        "users": {
+          "fields": ["id", "email", "name", "hashed_password", "subscription_tier", "is_active", "created_at", "updated_at"],
+          "indexes": ["email", "subscription_tier", "created_at"]
+        },
+        "prompts": {
+          "fields": ["id", "title", "content", "category", "tags", "owner_id", "team_id", "version", "is_active", "created_at", "updated_at"],
+          "indexes": ["owner_id", "team_id", "category", "tags", "created_at"],
+          "foreign_keys": ["owner_id -> users.id", "team_id -> teams.id"]
+        },
+        "prompt_versions": {
+          "fields": ["id", "prompt_id", "content", "version_number", "created_at"],
+          "indexes": ["prompt_id", "version_number"],
+          "foreign_keys": ["prompt_id -> prompts.id"]
+        },
+        "session_contexts": {
+          "fields": ["id", "user_id", "ai_tool", "context_data", "metadata", "created_at", "updated_at"],
+          "indexes": ["user_id", "ai_tool", "created_at"],
+          "foreign_keys": ["user_id -> users.id"]
+        },
+        "teams": {
+          "fields": ["id", "name", "owner_id", "subscription_tier", "created_at", "updated_at"],
+          "indexes": ["owner_id", "subscription_tier"],
+          "foreign_keys": ["owner_id -> users.id"]
+        },
+        "team_members": {
+          "fields": ["id", "user_id", "team_id", "role", "joined_at"],
+          "indexes": ["user_id", "team_id", "role"],
+          "foreign_keys": ["user_id -> users.id", "team_id -> teams.id"]
+        },
+        "user_activities": {
+          "fields": ["id", "user_id", "activity_type", "data", "timestamp"],
+          "indexes": ["user_id", "activity_type", "timestamp"],
+          "foreign_keys": ["user_id -> users.id"]
+        },
+        "prompt_analytics": {
+          "fields": ["id", "prompt_id", "usage_count", "effectiveness_score", "updated_at"],
+          "indexes": ["prompt_id", "usage_count"],
+          "foreign_keys": ["prompt_id -> prompts.id"]
+        }
+      }
+    }
+  },
+  "acceptance_criteria": [
+    "All SQLAlchemy models are created with proper relationships",
+    "Database schema supports all planned features from PRD",
+    "Alembic migrations are set up and working",
+    "Database connection and session management is configured",
+    "All models have proper validation and serialization",
+    "Database indexes are optimized for expected query patterns",
+    "Models support the existing prompt template functionality",
+    "Unit tests validate model behavior and constraints",
+    "Migration can be run successfully on fresh database",
+    "All dependencies are properly documented in requirements.txt"
+  ],
+  "estimated_complexity": "High",
+  "prerequisites": [
+    "PostgreSQL database server available (local or remote)",
+    "Database credentials configured in environment variables",
+    "Understanding of current prompt template structure"
+  ],
+  "risk_factors": [
+    "Database migration complexity",
+    "Potential conflicts with existing Parsinator models",
+    "Performance impact of new database queries",
+    "Data migration from file-based storage"
+  ],
+  "success_metrics": [
+    "All models created without errors",
+    "Database schema matches expected design",
+    "Migration completes successfully",
+    "Unit tests pass with >90% coverage",
+    "Database queries perform within acceptable limits"
+  ]
+}
