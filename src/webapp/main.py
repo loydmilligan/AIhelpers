@@ -75,6 +75,40 @@ from services.email_service import email_service
 
 app = FastAPI(title="AI Prompt Helper API", version="1.0.0")
 
+# =============================================================================
+# API ENDPOINT SECURITY SUMMARY
+# =============================================================================
+# 
+# PROTECTED ENDPOINTS (Require Authentication):
+# - POST /api/generate - Requires check_prompt_limit (includes auth)
+# - POST /api/parsinator/process-brief - Requires check_brief_limit (includes auth)
+# - POST /api/parsinator/validate-brief - Requires check_validation_limit (includes auth)
+# - GET  /auth/profile - Requires auth
+# - PUT  /auth/profile - Requires auth  
+# - POST /auth/change-password - Requires auth
+# - POST /auth/logout - Requires auth
+# - GET  /auth/subscription/status - Requires auth
+# - POST /auth/subscription/change - Requires auth
+# - GET  /auth/subscription/usage - Requires auth
+#
+# PARTIALLY PROTECTED ENDPOINTS (Optional Authentication):
+# - POST /api/parse-template - Optional auth for usage tracking
+#
+# PUBLIC ENDPOINTS (No Authentication Required):
+# - GET  /api/templates - Browse available templates
+# - GET  /api/parsinator/health - Health check
+# - GET  /api/parsinator/templates - Browse brief templates
+# - GET  /auth/health - Auth system health check
+# - GET  /auth/subscription/health - Subscription health check
+# - POST /auth/register - User registration
+# - POST /auth/login - User login
+# - POST /auth/reset-password - Password reset request
+# - POST /auth/confirm-reset - Password reset confirmation
+# - POST /auth/verify-email - Email verification
+# - POST /auth/resend-verification - Resend verification email
+#
+# =============================================================================
+
 # Include routers
 app.include_router(prompt_router)
 app.include_router(context_router)
@@ -725,8 +759,17 @@ class ParseTemplateRequest(BaseModel):
     template_name: str
 
 @app.post("/api/parse-template", response_model=PlaceholdersResponse)
-async def parse_template_endpoint(request: ParseTemplateRequest):
-    """Parse a template and return its placeholders"""
+async def parse_template_endpoint(
+    request: ParseTemplateRequest,
+    current_user: Optional[User] = Depends(optional_auth),
+    db: Session = Depends(get_db_session)
+):
+    """Parse a template and return its placeholders
+    
+    This endpoint supports optional authentication:
+    - Unauthenticated users can parse templates for exploration
+    - Authenticated users have their usage tracked for analytics
+    """
     template_name = request.template_name
     try:
         template_path = Path(prompts_dir) / template_name
@@ -735,6 +778,20 @@ async def parse_template_endpoint(request: ParseTemplateRequest):
             raise HTTPException(status_code=404, detail=f"Template '{template_name}' not found")
         
         placeholders = parse_template(template_path)
+        
+        # Track usage for authenticated users
+        if current_user:
+            from models.analytics import UserActivity
+            activity = UserActivity.create_activity(
+                user_id=current_user.id,
+                activity_type="template_parsed",
+                data={
+                    "template_name": template_name,
+                    "placeholder_count": len(placeholders)
+                }
+            )
+            db.add(activity)
+            db.commit()
         
         return PlaceholdersResponse(placeholders=placeholders)
     
