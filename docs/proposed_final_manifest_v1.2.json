@@ -21,12 +21,13 @@
   },
   "documentation": {
     "readme": "README.md",
-    "task_list": "docs/task_list.md",
+    "task_list": "docs/task_list.md", 
     "prd": "docs/PRD_AI_Coding_Workflow_MVP.md",
     "architecture": "docs/architecture.md",
     "api_docs": "docs/api_documentation.md",
     "user_guide": "docs/user_guide.md",
     "deployment_guide": "docs/deployment.md",
+    "manifest_evolution": "docs/manifest_evolution.md",
     "existing_docs": [
       "docs/parsinator/manifest_workflow_summary.md",
       "docs/examples/generic_manifest_evolution.md"
@@ -35,17 +36,17 @@
   "files": {
     "backend": {
       "src/main.py": "Application entry point and CLI orchestration",
-      "src/webapp/main.py": "FastAPI web application with full feature set and context integration",
-      "src/auth/": "Comprehensive authentication and authorization system (middleware, OAuth2, JWT)",
+      "src/webapp/main.py": "FastAPI web application with authentication, usage limits, and context integration",
+      "src/auth/": "Comprehensive authentication system (dependencies, middleware, OAuth2, JWT, usage limits, email verification)",
       "src/config/": "Configuration management with database connection and environment handling",
-      "src/models/": "SQLAlchemy models (User, Prompt, SessionContext, Team, Analytics) with relationships",
-      "src/services/": "Business logic services (prompt, context, analytics, search, versioning)",
-      "src/api/": "API route handlers organized by feature (context, prompts, analytics)",
-      "src/schemas/": "Pydantic schemas for request/response validation and API documentation",
-      "src/utils/": "Utility functions including context compression and optimization",
+      "src/models/": "SQLAlchemy models (User, Prompt, SessionContext, Team, Analytics) with subscription tiers and relationships",
+      "src/services/": "Business logic services (context, prompt, subscription, email, analytics, search, versioning)",
+      "src/api/": "API route handlers organized by feature (context preservation with compression)",
+      "src/schemas/": "Pydantic schemas for request/response validation including subscription and context schemas",
+      "src/utils/": "Utility functions including context compression with 60%+ size reduction",
       "src/scripts/": "Migration and maintenance scripts for data transformation",
       "src/integrations/": "External service integrations (Claude Code, Cursor, AI providers)",
-      "alembic/": "Database migration scripts using Alembic with versioning"
+      "alembic/": "Database migration scripts using Alembic with user model and subscription tier migrations"
     },
     "parsinator": {
       "src/parsinator/": "Complete task generation system (existing, enhanced)",
@@ -66,11 +67,11 @@
       "monitoring/": "Application monitoring and observability"
     },
     "configuration": {
-      "requirements.txt": "Python dependencies",
+      "requirements.txt": "Python dependencies with auth and performance packages",
       "package.json": "Frontend dependencies and build scripts",
       "docker-compose.yml": "Development environment setup",
       "Dockerfile": "Production container configuration",
-      ".env.example": "Environment variables template"
+      ".env.example": "Environment variables template with email and database config"
     }
   },
   "dependencies": {
@@ -83,10 +84,11 @@
       "redis>=5.0.0",
       "celery>=5.3.0",
       "pydantic>=2.0.0",
-      "python-multipart>=0.0.6",
+      "python-multipart>=0.0.5",
       "python-jose[cryptography]>=3.3.0",
       "passlib[bcrypt]>=1.7.4",
       "python-dotenv>=1.0.0",
+      "email-validator>=1.1.0",
       "orjson>=3.9.0",
       "diff-match-patch>=20230430"
     ],
@@ -118,37 +120,44 @@
     ]
   },
   "architecture": {
-    "main_flow": "User authentication → Prompt library management → Context preservation → AI tool integration → Team collaboration → Analytics",
-    "data_flow": "User input → Template processing → AI generation → Context storage → Session restoration → Collaborative sharing",
+    "main_flow": "User authentication → Subscription management → Prompt library management → Context preservation → AI tool integration → Team collaboration → Analytics",
+    "data_flow": "User registration → Email verification → Subscription tier assignment → Template processing → AI generation → Context compression → Session restoration → Usage tracking → Analytics",
     "configuration": "Environment-based configuration with secure secrets management and feature flags",
     "key_components": [
+      "Complete User Authentication & Authorization System (OAuth2, JWT, email verification)",
+      "Subscription Tier Management with Usage Limits (FREE: 50 prompts, 10 briefs monthly)",
       "Intelligent Prompt Library with semantic search and versioning",
-      "Advanced Session Context Preservation Engine with compression",
+      "Advanced Session Context Preservation Engine with 60%+ compression",
       "Tool-Specific Format Optimization (Claude Code, Cursor, ChatGPT)",
-      "Context Compression and Storage Optimization (60%+ reduction)",
+      "Context Compression and Storage Optimization using orjson and zlib",
       "Template-Driven Prompt Creation with database integration",
       "Real-time Context Management with HTMX integration",
       "Enhanced Parsinator with AI integration and dependency analysis",
       "Service-Oriented Architecture with clear separation of concerns",
       "Progressive Web App frontend with offline capabilities",
-      "Comprehensive API with authentication and validation"
+      "Comprehensive API with authentication, authorization, and usage limits",
+      "Email Service Infrastructure (mock for development, SMTP for production)",
+      "Usage Analytics and Tracking System"
     ],
     "integration_points": [
       "Claude Code API for session context",
       "Cursor extension for prompt sharing",
       "Google Gemini for AI generation",
-      "PostgreSQL for persistent storage",
+      "PostgreSQL for persistent storage with Alembic migrations",
       "Redis for caching and sessions",
       "WebSocket for real-time features",
+      "SMTP/Email service providers for notifications",
       "External authentication providers",
       "Analytics and monitoring services"
     ]
   },
   "features": {
     "core_features": [
-      "User authentication and authorization",
+      "User authentication with email verification",
+      "Subscription tier management (FREE/PROFESSIONAL/TEAM)",
+      "Usage limit enforcement for freemium model",
       "Intelligent prompt library with search",
-      "Session context preservation",
+      "Session context preservation with compression",
       "AI tool integrations",
       "Team collaboration basics",
       "Analytics dashboard",
@@ -167,7 +176,7 @@
   },
   "data_models": {
     "user_management": {
-      "User": "id, email, name, hashed_password, subscription_tier, is_active, created_at, updated_at",
+      "User": "id, email, name, hashed_password, subscription_tier, is_active, is_email_verified, email_verification_token, email_verified_at, created_at, updated_at",
       "Team": "id, name, owner_id, subscription_tier, created_at, updated_at",
       "TeamMember": "user_id, team_id, role, permissions, joined_at"
     },
@@ -181,27 +190,35 @@
       "ContextSnapshot": "id, session_id, snapshot_data, snapshot_metadata, created_at"
     },
     "analytics": {
-      "UserActivity": "id, user_id, activity_type, data, timestamp, session_id",
-      "PromptAnalytics": "id, prompt_id, usage_count, effectiveness_score, avg_response_time, success_rate, updated_at"
+      "UserActivity": "id, user_id, activity_type, activity_data, timestamp, session_id",
+      "UsageMetrics": "id, user_id, metric_type, value, period_start, period_end, created_at"
     }
   },
   "security": {
-    "authentication": "JWT tokens with refresh mechanism",
-    "authorization": "Role-based access control (RBAC)",
-    "data_protection": "Encryption at rest and in transit",
-    "api_security": "Rate limiting, input validation, CORS configuration",
-    "compliance": "SOC2 Type II readiness, GDPR compliance"
+    "authentication": "JWT tokens with refresh mechanism and email verification",
+    "authorization": "Role-based access control (RBAC) with subscription tier enforcement",
+    "data_protection": "Encryption at rest and in transit with bcrypt password hashing",
+    "api_security": "Rate limiting, input validation, CORS configuration, usage limits",
+    "compliance": "SOC2 Type II readiness, GDPR compliance",
+    "email_security": "Email verification workflow with secure token generation"
   },
   "performance": {
     "caching": "Redis for session storage and frequently accessed data",
-    "database": "PostgreSQL with optimized queries and indexing",
+    "database": "PostgreSQL with optimized queries, indexing, and connection pooling",
     "frontend": "Progressive Web App with offline capabilities",
     "scalability": "Horizontal scaling with load balancing",
-    "monitoring": "Comprehensive observability stack"
+    "monitoring": "Comprehensive observability stack",
+    "compression": "Context compression achieving 60%+ size reduction using orjson and zlib"
   },
   "development": {
     "approach": "Manifest-driven development retrofitted to existing codebase",
-    "target_phase": "all_tasks_completed",
+    "target_phase": "phase_1_foundation_complete",
+    "completion_status": {
+      "task_1": "COMPLETE - Database Schema & Models Setup",
+      "task_2": "COMPLETE - User Authentication & Authorization System",
+      "task_3": "PENDING - Enhanced Prompt Library Backend",
+      "task_4": "COMPLETE - Context Preservation Engine"
+    },
     "completion_criteria": [
       "All 20 tasks in task_list.md completed with 75 subtasks",
       "All acceptance criteria met from PRD",
@@ -223,7 +240,7 @@
     ],
     "deployment_strategy": [
       "Blue-green deployment",
-      "Database migration automation",
+      "Database migration automation with Alembic",
       "Feature flags for gradual rollout",
       "Monitoring and alerting",
       "Rollback procedures"
@@ -235,6 +252,11 @@
     "conversion_rate": "10% conversion to paid plans",
     "retention_rate": "85% user retention after 30 days",
     "feature_adoption": "70% of users create/use prompt templates within first week",
-    "efficiency_gains": "60% reduction in session setup time"
+    "efficiency_gains": "60% reduction in session setup time",
+    "freemium_model": {
+      "free_tier": "50 prompts/month, 10 briefs/month, 20 validations/month",
+      "professional_tier": "Unlimited usage, advanced analytics",
+      "team_tier": "Unlimited usage, team collaboration features"
+    }
   }
 }
